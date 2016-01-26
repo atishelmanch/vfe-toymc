@@ -2,13 +2,13 @@ from scipy import array # For filling a TH2F with a vector
 from copy import deepcopy
 from math import ceil
 from ROOT import *
-import tdrstyle
+#import tdrstyle
 
 # Sets up some of the variables based off of the input file, results.txt then
 # passes these to dependent_sigma_files where ther real work starts happening
 def main():
 
-    tdrstyle.setTDRStyle()
+    #tdrstyle.setTDRStyle()
     gROOT.SetBatch(True)
     gStyle.SetPalette(1)
 

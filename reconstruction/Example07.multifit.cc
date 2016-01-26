@@ -98,7 +98,7 @@ void run(std::string inputFile, std::string outFile, int NSAMPLES, float NFREQ) 
   
     pulseShapeTemplate.push_back( pSh.fShape(x));
   
-    td::cout << " [" << i << "::" << (NSAMPLES+2*25 /NFREQ) << "] --> pSh.fShape(" << x << ") = " << pSh.fShape(x) << " ---> " << pSh.fShape(x) * NFREQ/25. << std::endl;
+    std::cout << " [" << i << "::" << (NSAMPLES+2*25 /NFREQ) << "] --> pSh.fShape(" << x << ") = " << pSh.fShape(x) << " ---> " << pSh.fShape(x) * NFREQ/25. << std::endl;
  
   }
  
