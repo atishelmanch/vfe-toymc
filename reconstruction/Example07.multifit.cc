@@ -16,35 +16,7 @@
 #include "TFile.h"
 
 
-//---- transform the pulse into an histogram              - type is "reco = 1" or "sim = 0"
-TH1F* CreateHistoShape( SampleVector& sam, int itime, int type) {
-  TString name = Form ("h_%d_%d",type, itime);
-  TH1F* temphist = new TH1F(name.Data(),"",sam.rows(),0,sam.rows());
- 
-  for (int i=0; i<sam.rows(); i++) {
-    temphist->SetBinContent(i+1, sam[i]);
-  }
- 
-  return temphist;
-}
-
-
-//---- transform the pulse into an histogram              - type is "reco = 1" or "sim = 0"
-TH1F* CreateHistoAmplitudes( const PulseVector& sam, int itime, int type) {
-  TString name = Form ("hAmpl_%d_%d",type, itime);
-  TH1F* temphist = new TH1F(name.Data(),"",sam.rows(),0,sam.rows());
- 
-  for (int i=0; i<sam.rows(); i++) {
-    temphist->SetBinContent(i+1, sam[i]);
-  }
- 
-  return temphist;
-}
-
-
-
-
-void run(std::string inputFile, std::string outFile, int NSAMPLES, float NFREQ) {
+void run(std::string in_file_name, std::string out_file_name, int NSAMPLES, float NFREQ) {
  
   std::cout << " run ..." << std::endl;
  
@@ -89,16 +61,19 @@ void run(std::string inputFile, std::string outFile, int NSAMPLES, float NFREQ) 
   std::vector<double> pulseShapeTemplate;
  
 
+  // suzannah: What on earth is (NSAMPLES + 7 * int(25 / NFREQ)) ???
   for(int i=0; i<(NSAMPLES+7*int(25 /NFREQ)); i++) {
    
 
-    double x;
+    // depends on i:
+    double this_magic_number;
  
-    x = double( IDSTART + NFREQ * i + 3*25. - 500 / 2. );  //----> 500 ns is fixed!  
+    this_magic_number = double( IDSTART + NFREQ * i + 3*25. - 500 / 2. );  //----> 500 ns is fixed!  
   
-    pulseShapeTemplate.push_back( pSh.fShape(x));
+    pulseShapeTemplate.push_back( pSh.fShape(this_magic_number));
   
-    std::cout << " [" << i << "::" << (NSAMPLES+2*25 /NFREQ) << "] --> pSh.fShape(" << x << ") = " << pSh.fShape(x) << " ---> " << pSh.fShape(x) * NFREQ/25. << std::endl;
+    // suzannah: What on earth is (NSAMPLES + 2 * 25 / NFREQ) ???
+    std::cout << " [" << i << "::" << (NSAMPLES+2*25 /NFREQ) << "] --> pSh.fShape(" << this_magic_number << ") = " << pSh.fShape(this_magic_number) << " ---> " << pSh.fShape(this_magic_number) * NFREQ/25. << std::endl;
  
   }
  
@@ -143,12 +118,12 @@ void run(std::string inputFile, std::string outFile, int NSAMPLES, float NFREQ) 
  
  
  
-  std::cout << " inputFile = " << inputFile << std::endl;
-  TFile *file2 = new TFile(inputFile.c_str());
+  std::cout << " in_file_name = " << in_file_name << std::endl;
+  TFile *input_file = new TFile(in_file_name.c_str());
 
   std::vector<double>* samples = new std::vector<double>;
   double amplitudeTruth;
-  TTree *tree = (TTree*) file2->Get("Samples");
+  TTree *tree = (TTree*) input_file->Get("Samples");
   tree->SetBranchAddress("amplitudeTruth",      &amplitudeTruth);
   tree->SetBranchAddress("samples",             &samples);
  
@@ -157,17 +132,17 @@ void run(std::string inputFile, std::string outFile, int NSAMPLES, float NFREQ) 
   std::cout << " nentries = " << nentries << std::endl;
   std::cout << " NSAMPLES = " << NSAMPLES << std::endl;
  
-  TFile *fout;
+  TFile *output_file;
   TH1D *h01;
  
   std::vector<TH1F*> v_pulses;
   std::vector<TH1F*> v_amplitudes_reco;
  
-  std::cout << " outFile = " << outFile << std::endl;
-  fout = new TFile(outFile.c_str(),"recreate");
+  std::cout << " out_file_name = " << out_file_name << std::endl;
+  output_file = new TFile(out_file_name.c_str(),"recreate");
   h01 = new TH1D("h01", "dA", 5000, -5.0, 5.0);
  
-  fout->cd();
+  output_file->cd();
   TTree* newtree = (TTree*) tree->CloneTree(0); //("RecoAndSim");
   newtree->SetName("RecoAndSim");
  
@@ -193,7 +168,7 @@ void run(std::string inputFile, std::string outFile, int NSAMPLES, float NFREQ) 
   pulsefunc.setNFREQ(NFREQ);
   pulsefunc.Init(); //---- initialization, needed
  
-  fout->cd();
+  output_file->cd();
  
   for(int ievt=0; ievt<nentries; ++ievt){
   
@@ -249,14 +224,14 @@ void run(std::string inputFile, std::string outFile, int NSAMPLES, float NFREQ) 
   std::cout << "   RMS of REC-MC = " << h01->GetRMS()  << " GeV" << std::endl;
  
  
-  fout->cd();
+  output_file->cd();
   std::cout << " done (1) " << std::endl;
   h01->Write();
   std::cout << " done (2) " << std::endl;
 
   newtree->Write();
   std::cout << " done (3) " << std::endl;
-  fout->Close();
+  output_file->Close();
  
   std::cout << " done ... " << std::endl;
  
@@ -265,17 +240,19 @@ void run(std::string inputFile, std::string outFile, int NSAMPLES, float NFREQ) 
 # ifndef __CINT__
 
 int main(int argc, char** argv) {
+
+  std::cout << "With some variable names changed!" << std::endl;
  
-  std::string inputFile = "data/samples_signal_10GeV_pu_0.root";
+  std::string in_file_name = "data/samples_signal_10GeV_pu_0.root";
   if (argc>=2) {
-    inputFile = argv[1];
+    in_file_name = argv[1];
   }
  
-  std::string outFile = "output.root";
+  std::string out_file_name = "output.root";
   if (argc>=3) {
-    outFile = argv[2];
+    out_file_name = argv[2];
   }
-  std::cout << " outFile = " << outFile << std::endl;
+  std::cout << " out_file_name = " << out_file_name << std::endl;
  
   //---- number of samples per impulse
   int NSAMPLES = 10;
@@ -293,9 +270,9 @@ int main(int argc, char** argv) {
  
  
  
-  run(inputFile, outFile, NSAMPLES, NFREQ);
+  run(in_file_name, out_file_name, NSAMPLES, NFREQ);
  
-  std::cout << " outFile = " << outFile << std::endl;
+  std::cout << " out_file_name = " << out_file_name << std::endl;
  
   return 0;
 }
