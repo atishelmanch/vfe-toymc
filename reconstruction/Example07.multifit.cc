@@ -140,7 +140,8 @@ void run(std::string in_file_name, std::string out_file_name, int NSAMPLES, floa
  
   std::cout << " out_file_name = " << out_file_name << std::endl;
   output_file = new TFile(out_file_name.c_str(),"recreate");
-  h01 = new TH1D("h01", "dA", 5000, -5.0, 5.0);
+  //h01 = new TH1D("h01", "dA", 5000, -5.0, 5.0);
+  h01 = new TH1D("h01", "dA", 100, -0.15, 0.15);
  
   output_file->cd();
   TTree* newtree = (TTree*) tree->CloneTree(0); //("RecoAndSim");
