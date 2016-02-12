@@ -80,11 +80,8 @@ def main(files):
         # Getting and checking the stats for the file
         # stats = [NSAMPLE, NFREQ, AMP, PU]
         tree.GetEntry(0)
-        # **** Currently energy PU is gotten from the file format. This is to be changed
-        # **** once Andrea updates his analysis to include it in the root tree
-        # replace the map(int(...)) with: round(tree.energyPU, 2) or tree.whatevertheaddress is
-        stats = [round(tree.nSmpl, 2), round(tree.nFreq, 2), 
-                round(tree.amplitudeTruth, 2), map(int, re.findall(r'\d+', f))[5]]
+        stats = [round(tree.nSmpl, 2), round(tree.nFreq, 2),
+                round(tree.amplitudeTruth, 2), round(tree.nPU, 2)]
 
         # Energy Distribution from all events
         energy_hist = TH1F("NSAMPLE:"+str(stats[0])+"_NFREQ:"+str(stats[1])+"_AMP:"+str(stats[2])+"_PU:"+str(stats[3]),
