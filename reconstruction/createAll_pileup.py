@@ -5,7 +5,8 @@ if __name__ == '__main__':
     SHIFT = 0
     NTOYS = 100
     #NSAMPLE_NFREQ = [ (10, 25), (20, 12.5), (40, 6.25) ]
-    NSAMPLE_NFREQ = [ (20, 12.5) ]
+    #NSAMPLE_NFREQ = [ (20, 12.5) ]
+    NSAMPLE_NFREQ = [ (10, 25), (40, 6.25) ]
     AMPLITUDE = 10.0
     NPUS = range(0, 201, 10)
 

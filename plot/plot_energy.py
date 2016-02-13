@@ -44,22 +44,22 @@ def main(files):
     # Starts at 0.5 so thatentries are centered about integers
     MIN_BIN = 0.5
 
-    # Histograms for standard deviations vs. vairous values
+    # Histograms for standard deviations vs. various values
     sample_hist = TH1F("StdDev_Sample",
                     "Standard Deviation vs. NSAMPLES for NFREQ=25;\
                     NSAMPLES; Standard Deviation",
                     BINS, MIN_BIN, BINS + MIN_BIN)
     frequency_hist = TH1F("StdDev_Frequency",
-                    "Standard Deviation vs. NSAMPLES for NFREQ=25;\
-                    NSAMPLES; Standard Deviation",
+                    "Standard Deviation vs. NFREQ for ???=???;\
+                    NFREQ; Standard Deviation",
                     BINS, MIN_BIN, BINS + MIN_BIN)
     amplitude_hist = TH1F("StdDev_Amplitude",
-                    "Standard Deviation vs. NSAMPLES for NFREQ=25;\
-                    NSAMPLES; Standard Deviation",
+                    "Standard Deviation vs. AMPLITUDE for ???=???;\
+                    AMPLITUDE; Standard Deviation",
                     BINS, MIN_BIN, BINS + MIN_BIN)
     pileup_hist = TH1F("StdDev_PileUp",
-                    "Standard Deviation vs. NSAMPLES for NFREQ=25;\
-                    NSAMPLES; Standard Deviation",
+                    "Standard Deviation vs. NPILEUP for ???=???;\
+                    NPILEUP; Standard Deviation",
                     BINS, MIN_BIN, BINS + MIN_BIN)
     hists = [sample_hist, frequency_hist, amplitude_hist, pileup_hist]
     # Boundaries for how to draw the histograms
