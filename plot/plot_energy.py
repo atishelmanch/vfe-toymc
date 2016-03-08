@@ -86,7 +86,7 @@ def main(files):
         # Energy Distribution from all events
         energy_hist = TH1F("NSAMPLE:"+str(stats[0])+"_NFREQ:"+str(stats[1])+"_AMP:"+str(stats[2])+"_PU:"+str(stats[3]),
                          "Error of Signal Amplitude about True Amplitude; Error (GeV); Frequency",
-                          BINS, -ERROR*stats[2], ERROR*stats[2])
+                          100, -0.15, 0.15)#BINS, -ERROR*stats[2], ERROR*stats[2])
 
         # Filling the energy distribution histograms
         for event in range(0, events):
@@ -128,5 +128,5 @@ if __name__ == "__main__":
         args += glob(arg)
     print args
     main(args)
-    
-    
+
+

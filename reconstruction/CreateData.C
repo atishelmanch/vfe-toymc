@@ -45,6 +45,8 @@ int main(int argc, char** argv) {
   // ADD WHAT THIS IS
   const float eta = 0.0;
 
+  char * wf_name;
+
   // Changing variables if passed in on the command line
   if (argc>=2) shift = atoi(argv[1]);
   if (argc>=3) nEventsTotal = atoi(argv[2]);
@@ -54,6 +56,12 @@ int main(int argc, char** argv) {
   if (argc>=7) signalAmplitude = atof(argv[6]);
   if (argc>=8) sigmaNoise = atof(argv[7]);
   if (argc>=9) puFactor = atof(argv[8]);
+  if (argc>=10) {
+      wf_name = argv[9];
+  } else {
+  std::string wf_name_string = "CRRC43";
+  wf_name = (char *) wf_name_string.c_str();
+  }
  
   int IDSTART = 7*25;
   int WFLENGTH = 500*4; // step 1/4 ns in waveform
@@ -77,10 +85,12 @@ int main(int argc, char** argv) {
   pSh.Init();
  
   // make sure these inputs are what you really want
-  TFile *file = new TFile("data/EmptyFileCRRC43.root");
+  //TFile *file = new TFile("data/EmptyFileCRRC43.root");
+  std::string tmp = ((std::string) "data/EmptyFile") + ((std::string) wf_name) + ((std::string) ".root");
+  TFile *file = new TFile(tmp.c_str());
   TString filenameOutput = 
-          Form("input/mysample_%d_%d_%d_%.2f_%.2f_%.2f_%.2f_%.2f.root", 
-          nEventsTotal, shift, NSAMPLES, NFREQ, signalAmplitude, nPU, sigmaNoise, puFactor);
+          Form("input/mysample_%d_%d_%d_%.2f_%.2f_%.2f_%.2f_%.2f_%s.root", 
+          nEventsTotal, shift, NSAMPLES, NFREQ, signalAmplitude, nPU, sigmaNoise, puFactor, wf_name);
   TFile *fileOut = new TFile(filenameOutput.Data(),"recreate");
  
   // Get PDF for pileup

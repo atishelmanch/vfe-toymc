@@ -140,8 +140,8 @@ void run(std::string in_file_name, std::string out_file_name, int NSAMPLES, floa
  
   std::cout << " out_file_name = " << out_file_name << std::endl;
   output_file = new TFile(out_file_name.c_str(),"recreate");
-  //h01 = new TH1D("h01", "dA", 5000, -5.0, 5.0);
-  h01 = new TH1D("h01", "dA", 100, -0.15, 0.15);
+  h01 = new TH1D("h01", "dA", 5000, -5.0, 5.0);
+  //h01 = new TH1D("h01", "dA", 100, -0.15, 0.15);
  
   output_file->cd();
   TTree* newtree = (TTree*) tree->CloneTree(0); //("RecoAndSim");
@@ -173,7 +173,7 @@ void run(std::string in_file_name, std::string out_file_name, int NSAMPLES, floa
  
   for(int ievt=0; ievt<nentries; ++ievt){
   
-    if (!(ievt%10)) {
+    if (!(ievt%100)) {
       std::cout << " ievt = " << ievt << " :: " << nentries << std::endl;
     }
   
@@ -201,6 +201,9 @@ void run(std::string in_file_name, std::string out_file_name, int NSAMPLES, floa
     }
   
     double aMax = status ? (*(pulsefunc.X()))[ipulseintime] : 0.;
+    if (!status) {
+      std::cout << "asdfasdf" << std::endl;
+    }
   
     for (unsigned int ipulse=0; ipulse<pulsefunc.BXs()->rows(); ++ipulse) {
       if (status) {

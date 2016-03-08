@@ -8,10 +8,11 @@ def main(files):
 
     # The files to write histograms and raw text data too
     outputfile = open("results.txt", 'w')
-    outrootfile = TFile("energy_hists.root", "RECREATE")
+    #outrootfile = TFile("energy_hists.root", "RECREATE")
 
     # The number of bins to use in the histogram
     BINS = 4000
+    #BINS = 40000
     start_bin = -2
     end_bin = 2
     bin_size = 1.0 * (end_bin - start_bin) / BINS
@@ -48,11 +49,13 @@ def main(files):
         # Making the energy distribution histogram
         dev_hist_name = "Hist"
         dev_hist = TH1F("", "", BINS, start_bin, end_bin)
+        dev_list = []
         for event in range(0, entries):
             tree.GetEntry(event)
             event_amplitude = tree.amplitudeTruth
             reco_amplitude = tree.samplesReco.at(in_time_bx)
             dev_hist.Fill(reco_amplitude - event_amplitude)
+            dev_list.append(reco_amplitude - event_amplitude)
 
         # Filling the array for determining sigma_eff
         # Note: the first and last bins are overflow and currently this loop
@@ -62,7 +65,9 @@ def main(files):
             dev_array.append(dev_hist.GetBinContent(bin))
 
         # calculate uncertainty
-        sigma = sigma_eff(dev_array, bin_size, dev_hist.GetEntries())
+        #sigma = sigma_eff(dev_array, bin_size, dev_hist.GetEntries())
+        sigma = get_sigma(dev_hist)#
+        #return
 
         # Logging information and terminal print outs
         for stat, name in zip(stats, stat_names):
@@ -75,14 +80,25 @@ def main(files):
             outputfile.write('{0:>17.7f} '.format(dev))
         outputfile.write("\n")
 
-        outrootfile.cd()
+        #outrootfile.cd()
         dev_hist.SetName(dev_hist_name)
         dev_hist.SetTitle(dev_hist_name)
         dev_hist.Write()
         in_file.Close()
 
     outputfile.close()
-    outrootfile.Close()
+    #outrootfile.Close()
+
+# Takes a 1D histogram, fits a Gaussian distribution to it, and
+# and returns the standard deviation calculated by the fit.
+def get_sigma(hist):
+  #result_ptr = hist.Fit("gaus", "S")
+  result_ptr = hist.Fit("gaus", "S", "", -0.5, 0.5)
+  params = result_ptr.Parameters()
+  const, mean, sigma = params
+  sigma_error = result_ptr.ParError(2)
+  #print sigma, sigma_error
+  return sigma, sigma_error
 
 # Takes in an array and calculates the effective sigma, the windowed
 # range which contains 68% of the data (one sigma). Returns a tuple 

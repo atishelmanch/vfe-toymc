@@ -1,6 +1,6 @@
 //---- plot output of multifit
 
-void plotPulse (std::string nameInputFile = "output.root", int nEvent = 10){
+void plotPulse (std::string nameInputFile = "output.root", std::string suffix = "", int nEvent = 10){
  
  Color_t* color = new Color_t [200];
  color[0] = kAzure; //kRed ;
@@ -43,7 +43,7 @@ void plotPulse (std::string nameInputFile = "output.root", int nEvent = 10){
  tree->GetEntry(nEvent);
  std::cout << " NFREQ = " << NFREQ << std::endl;
  
- TCanvas* ccwaveform = new TCanvas ("ccwaveform","",800,600);
+ TCanvas* ccwaveform = new TCanvas ("ccwaveform","ccwaveform",800,600);
  TGraph *gr = new TGraph();
  for(int i=0; i<nWF; i++){
   gr->SetPoint(i, i, waveform->at(i));
@@ -52,10 +52,11 @@ void plotPulse (std::string nameInputFile = "output.root", int nEvent = 10){
  gr->SetLineColor(kMagenta);
  gr->SetLineWidth(2);
  gr->GetXaxis()->SetTitle("time [ns]");
+ //ccwaveform->SaveAs("ccwaveform" + suffix + ".png");
  
  
  
- TCanvas* ccReco = new TCanvas ("ccReco","",800,600);
+ TCanvas* ccReco = new TCanvas ("ccReco","ccReco",800,600);
  TGraph *grReco = new TGraph();
  for(int i=0; i<samplesReco->size(); i++){
   std::cout << " i, activeBXs->at(i), samplesReco->at(i) = " << i << "::" << samplesReco->size() << " -> " << activeBXs->at(i) << " , " << samplesReco->at(i) << std::endl;
@@ -66,9 +67,11 @@ void plotPulse (std::string nameInputFile = "output.root", int nEvent = 10){
  grReco->SetMarkerColor(kBlue);
  grReco->Draw("ALP");
  grReco->GetXaxis()->SetTitle("BX");
+ //ccReco->SaveAs("ccReco" + suffix + ".png");
  
  
- TCanvas* ccPulse = new TCanvas ("ccPulse","",800,600);
+ 
+ TCanvas* ccPulse = new TCanvas ("ccPulse","ccPulse",800,600);
  TGraph *grPulse = new TGraph();
  for(int i=0; i<samples->size(); i++){
   grPulse->SetPoint(i, i * NFREQ , samples->at(i));
@@ -78,11 +81,12 @@ void plotPulse (std::string nameInputFile = "output.root", int nEvent = 10){
  grPulse->SetMarkerColor(kRed);
  grPulse->Draw("ALP");
  grPulse->GetXaxis()->SetTitle("time [ns]");
+ //ccPulse->SaveAs("ccPulse" + suffix + ".png");
  
  std::cout << " end " << std::endl;
  
  
- TCanvas* ccPulseAndReco = new TCanvas ("ccPulseAndReco","",800,600);
+ TCanvas* ccPulseAndReco = new TCanvas ("ccPulseAndReco","ccPulseAndReco",800,600);
  TGraph *grPulseRecoAll = new TGraph();
  TGraph *grPulseReco[samplesReco->size()];
  std::cout << " samplesReco->size() = " << samplesReco->size() << std::endl;
@@ -118,16 +122,18 @@ void plotPulse (std::string nameInputFile = "output.root", int nEvent = 10){
   leg->AddEntry(grPulseReco[iBx],nameHistoTitle.Data(),"p");
  }
  
- grPulse->Draw("ALP");
+ //grPulseReco->Draw("ALP");
 //  for(int iBx=0; iBx<3; iBx++){
  for(int iBx=1; iBx<samplesReco->size(); iBx++){
-  grPulseReco[iBx]->Draw("PL");
+  //grPulseReco[iBx]->Draw("PL");
+  //grPulseReco[iBx]->Draw("same PL");
  }
  
  for(int i=0; i<samples->size(); i++){
   grPulseRecoAll->SetPoint(i, i * NFREQ, totalRecoSpectrum.at(i));
  }
  
+ TCanvas* ccPulseRecoAll = new TCanvas ("ccPulseRecoAll","ccPulseRecoAll",800,600);
  grPulseRecoAll->SetMarkerColor(kMagenta);
  grPulseRecoAll->SetLineColor(kMagenta);
  grPulseRecoAll->SetLineStyle(1);

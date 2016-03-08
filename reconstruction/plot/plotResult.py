@@ -1,3 +1,4 @@
+import sys
 from scipy import array # For filling a TH2F with a vector
 from copy import deepcopy
 from math import ceil
@@ -6,14 +7,14 @@ from ROOT import *
 
 # Sets up some of the variables based off of the input file, results.txt then
 # passes these to dependent_sigma_files where ther real work starts happening
-def main():
+def main(infile_name="results.txt", outfile_name="out.root"):
 
     #tdrstyle.setTDRStyle()
     gROOT.SetBatch(True)
     gStyle.SetPalette(1)
 
     # Read and split lines from input file
-    input_file = open("results.txt", 'r')
+    input_file = open(infile_name, 'r')
     input_lines = input_file.readlines()
     input_list = [l.split() for l in input_lines[2:]]
 
@@ -58,7 +59,7 @@ def main():
     [new_names.remove(n) for n in ["NSAMPLE", "NFREQ"] if n in new_names]
 
     # The file for everything to be written to
-    out_file = TFile("out.root", "Recreate")
+    out_file = TFile(outfile_name, "Recreate")
 
     # Build all the main graphs for standard sampling schemes
     for key in param_dict:
@@ -245,7 +246,7 @@ def make_graphs(path, canvas_var_val, params, names, sigmas, out_file):
         canvas.cd(canvas_panel_num)
         graph_list[index].Draw("APL")
         graph_list[index].GetXaxis().SetTitle(x_axis)
-        graph_list[index].GetYaxis().SetTitle("#sigma_{Eff}")
+        graph_list[index].GetYaxis().SetTitle("#sigma_{Eff} (Gev)")
         leg_list[index].Draw()
 
         canvas_panel_num += 1
@@ -428,4 +429,9 @@ def remove_duplicates(l):
     return sorted(list(set(l)))
 
 if __name__ == "__main__":
-    main()
+    infile_name, outfile_name = "results.txt", "out.root"
+    if len(sys.argv) > 1:
+       infile_name = sys.argv[1]
+    if len(sys.argv) > 2:
+       outfile_name = sys.argv[2]
+    main(infile_name, outfile_name)
