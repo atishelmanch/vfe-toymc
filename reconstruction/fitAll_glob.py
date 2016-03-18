@@ -10,6 +10,7 @@ if __name__ == '__main__':
        print " dry run option:",
        dryrun = sys.argv[1]
        print dryrun
+    print len(os.listdir('input'))
     for f in os.listdir('input'):
 	i = 'input/%s' % f
 	o = 'outputfit/%s' % f.replace('mysample', 'output')

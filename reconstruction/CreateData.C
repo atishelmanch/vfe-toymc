@@ -87,6 +87,7 @@ int main(int argc, char** argv) {
   // make sure these inputs are what you really want
   //TFile *file = new TFile("data/EmptyFileCRRC43.root");
   std::string tmp = ((std::string) "data/EmptyFile") + ((std::string) wf_name) + ((std::string) ".root");
+  std::cout << tmp << std::endl;
   TFile *file = new TFile(tmp.c_str());
   TString filenameOutput = 
           Form("input/mysample_%d_%d_%d_%.2f_%.2f_%.2f_%.2f_%.2f_%s.root", 
@@ -134,7 +135,7 @@ int main(int argc, char** argv) {
   treeOut->Branch("puFactor",       &puFactor,        "puFactor/F");
 
   for (int ievt = 0; ievt < nEventsTotal; ievt++) {
-    if (!(ievt%10)) {
+    if (!(ievt%100)) {
       std::cout << " ievt = " << ievt << " :: " << nEventsTotal << std::endl;
     }
 
