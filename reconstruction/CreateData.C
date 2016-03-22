@@ -82,13 +82,16 @@ int main(int argc, char** argv) {
   pSh.SetNFREQ(NFREQ);
   pSh.SetIDSTART(IDSTART);
   pSh.SetWFLENGTH(WFLENGTH);
-  pSh.Init();
  
   // make sure these inputs are what you really want
   //TFile *file = new TFile("data/EmptyFileCRRC43.root");
-  std::string tmp = ((std::string) "data/EmptyFile") + ((std::string) wf_name) + ((std::string) ".root");
-  std::cout << tmp << std::endl;
-  TFile *file = new TFile(tmp.c_str());
+  std::string wf_file_name = ((std::string) "data/EmptyFile") + ((std::string) wf_name) + ((std::string) ".root");
+
+  pSh.SetFNAMESHAPE(wf_file_name);
+  pSh.Init();
+
+
+  TFile *file = new TFile(wf_file_name.c_str());
   TString filenameOutput = 
           Form("input/mysample_%d_%d_%d_%.2f_%.2f_%.2f_%.2f_%.2f_%s.root", 
           nEventsTotal, shift, NSAMPLES, NFREQ, signalAmplitude, nPU, sigmaNoise, puFactor, wf_name);

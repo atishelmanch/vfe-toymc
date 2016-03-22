@@ -9,7 +9,7 @@ if __name__ == '__main__':
     NOISES = [0.0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1]
     #NOISES = []
     NOISE = 0.0
-    NPUS = range(0, 201, 10)
+    NPUS = range(20) + range(20, 201, 10)
     #NPUS = range(1, 10) + [15]
     #NPUS = [0, 20, 40, 100, 200]
     #NPUS = [0, 5, 10, 20, 40, 100, 150, 200]
@@ -31,7 +31,8 @@ if __name__ == '__main__':
       dryrun = sys.argv[1]
       print dryrun
  
-    for wf_name in QIE_WF_NAMES:# + CRRC_WF_NAMES:
+    #for wf_name in QIE_WF_NAMES + CRRC_WF_NAMES:
+    for wf_name in CRRC_WF_NAMES[3:]:
       for (n_sample, n_freq) in WF_NFREQ_DICT[wf_name]:
 
         for n_pu in NPUS:

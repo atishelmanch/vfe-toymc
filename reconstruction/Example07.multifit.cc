@@ -16,7 +16,9 @@
 #include "TFile.h"
 
 
-void run(std::string in_file_name, std::string out_file_name, int NSAMPLES, float NFREQ) {
+void run(
+    std::string in_file_name, std::string out_file_name,
+    int NSAMPLES, float NFREQ, std::string wf_name) {
  
   std::cout << " run ..." << std::endl;
  
@@ -39,6 +41,12 @@ void run(std::string in_file_name, std::string out_file_name, int NSAMPLES, floa
   pSh.SetWFLENGTH(WFLENGTH);
   pSh.SetIDSTART(IDSTART);
  
+  std::string wf_file_name = (
+      ((std::string) "data/EmptyFile") +
+      ((std::string) wf_name) +
+      ((std::string) ".root"));
+
+  pSh.SetFNAMESHAPE(wf_file_name);
   pSh.Init();
  
   std::cout << " pSh ready " << std::endl;
@@ -272,9 +280,16 @@ int main(int argc, char** argv) {
   }
   std::cout << " NFREQ = " << NFREQ << std::endl;
  
+  //---- waveform file
+  std::string wf_name = "CRRC43";
+  if (argc>=6) {
+    wf_name = (std::string) argv[5];
+  }
+  std::cout << " NFREQ = " << NFREQ << std::endl;
  
  
-  run(in_file_name, out_file_name, NSAMPLES, NFREQ);
+ 
+  run(in_file_name, out_file_name, NSAMPLES, NFREQ, wf_name);
  
   std::cout << " out_file_name = " << out_file_name << std::endl;
  
