@@ -1,6 +1,6 @@
 //---- plot output of multifit
 
-void plotPulse (std::string nameInputFile = "output.root", int nEvent = 10){
+void plotPulse (std::string nameInputFile = "output.root", std::string nsample, std::string nfreq, std::string nameWF, int nEvent = 10){
  
  Color_t* color = new Color_t [200];
  color[0] = kAzure; //kRed ;
@@ -49,9 +49,15 @@ void plotPulse (std::string nameInputFile = "output.root", int nEvent = 10){
   gr->SetPoint(i, i, waveform->at(i));
  }
  gr->Draw("AL");
+ std::string graph_title = nameWF + " Waveform";
+ char * graph_title_cst = graph_title.c_str();
+ gr->SetTitle(graph_title_cst);
  gr->SetLineColor(kMagenta);
  gr->SetLineWidth(2);
  gr->GetXaxis()->SetTitle("time [ns]");
+ std::string png_name = nameWF + "_raw.png";
+ char * png_name_cst = png_name.c_str();
+ ccwaveform->SaveAs(png_name_cst);
  
  
  
@@ -66,6 +72,12 @@ void plotPulse (std::string nameInputFile = "output.root", int nEvent = 10){
  grReco->SetMarkerColor(kBlue);
  grReco->Draw("ALP");
  grReco->GetXaxis()->SetTitle("BX");
+ png_name = nameWF + "_" + nsample + "_" + nfreq + "_reconstructed.png";
+ png_name_cst = png_name.c_str();
+ graph_title = "Reconstructed " + nameWF + " Pulse: " + nsample + " samples, " + nfreq + "ns period";
+ graph_title_cst = graph_title.c_str();
+ grReco->SetTitle(graph_title_cst);
+ ccReco->SaveAs(png_name_cst);
  
  
  TCanvas* ccPulse = new TCanvas ("ccPulse","",800,600);
@@ -78,6 +90,12 @@ void plotPulse (std::string nameInputFile = "output.root", int nEvent = 10){
  grPulse->SetMarkerColor(kRed);
  grPulse->Draw("ALP");
  grPulse->GetXaxis()->SetTitle("time [ns]");
+ png_name = nameWF + "_" + nsample + "_" + nfreq + "_digitized.png";
+ png_name_cst = png_name.c_str();
+ graph_title = "Digitized " + nameWF + " Waveform: " + nsample + " samples, " + nfreq + "ns period";
+ graph_title_cst = graph_title.c_str();
+ grPulse->SetTitle(graph_title_cst);
+ ccPulse->SaveAs(png_name_cst);
  
  std::cout << " end " << std::endl;
  

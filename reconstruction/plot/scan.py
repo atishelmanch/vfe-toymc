@@ -146,10 +146,8 @@ def sigma_eff_list(amp_list):
     amp_list = sorted(amp_list)
     n_entries = len(amp_list)
     one_sigma = 0.68 * n_entries
-    one_sigma_np1 = 0.68 * (n_entries + 1)
 
     window_size = amp_list[-1] - amp_list[0]
-    np1_win_size = window_size
 
     for start_index in range(0, n_entries - 1):
         start_value = amp_list[start_index]
@@ -160,17 +158,6 @@ def sigma_eff_list(amp_list):
             if (sum_in_range >= one_sigma) and \
                (end_value - start_value < window_size):
                 window_size = end_value - start_value
-                # Taking advantage of the fact that in this case, 68% of N + 1
-                # will include exactly 1 more data point than 68% of N.
-                try:
-                  one_left = end_value - amp_list[start_index - 1]
-                except IndexError:
-                  one_left = float('inf')
-                try:
-                  one_right = amp_list[end_index + 1] - start_value
-                except IndexError:
-                  one_right = float('inf')
-                np1_win_size = min(one_left, one_right)
                 break
         else:
             # No window was found so we can drop out of the loop
@@ -184,7 +171,6 @@ def sigma_eff_list(amp_list):
 
     sigma = window_size / 2.0
     sigma_err = sigma / sqrt(2.0*(n_entries - 1.0))
-    #sigma_err = (np1_win_size - window_size) / 2.0
 
     return [sigma, sigma_err]
 

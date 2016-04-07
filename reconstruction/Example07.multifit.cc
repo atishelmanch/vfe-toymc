@@ -45,6 +45,7 @@ void run(
       ((std::string) "data/EmptyFile") +
       ((std::string) wf_name) +
       ((std::string) ".root"));
+  std::cout << wf_file_name << std::endl;
 
   pSh.SetFNAMESHAPE(wf_file_name);
   pSh.Init();
@@ -285,7 +286,7 @@ int main(int argc, char** argv) {
   if (argc>=6) {
     wf_name = (std::string) argv[5];
   }
-  std::cout << " NFREQ = " << NFREQ << std::endl;
+  std::cout << " wf_name = " << wf_name << std::endl;
  
  
  
