@@ -164,6 +164,15 @@ void run(
   newtree->Branch("pulseShapeTemplate",   &pulseShapeTemplate);
   std::cout << " pulseShapeTemplate.size () = " << pulseShapeTemplate.size() << std::endl;
  
+  double chiSquare = 0;
+  newtree->Branch("chiSquare", &chiSquare, "chiSquare/D");
+ 
+  int outerIterations = 0;
+  newtree->Branch("outerIterations", &outerIterations, "outerIterations/I");
+  int outerIterationsCheck = 0;
+  newtree->Branch("outerIterationsCheck", &outerIterations, "outerIterations/I");
+  std::vector <int> innerIterations;
+  newtree->Branch("innerIterations",   &innerIterations);
  
   for (unsigned int ibx=0; ibx<totalNumberOfBxActive; ++ibx) {
     samplesReco.push_back(0.);
@@ -200,6 +209,12 @@ void run(
   
     bool status = pulsefunc.DoFit( amplitudes, noisecor, pedrms, activeBX, fullpulse, fullpulsecov );
     double chisq = pulsefunc.ChiSq();
+    std::cout << "  >> chisq =       " << chisq << std::endl;
+    chiSquare = chisq;
+
+    outerIterations = pulsefunc.OuterIterations();
+    outerIterationsCheck = pulsefunc.InnerIterations()->size();
+    innerIterations = *(pulsefunc.InnerIterations());
   
     ipulseintime = 0;
     for (unsigned int ipulse=0; ipulse<pulsefunc.BXs()->rows(); ++ipulse) {
@@ -209,6 +224,7 @@ void run(
       }
     }
   
+    std::cout << "  >> status =       " << status << std::endl;
     double aMax = status ? (*(pulsefunc.X()))[ipulseintime] : 0.;
     if (!status) {
       std::cout << "asdfasdf" << std::endl;
@@ -227,6 +243,8 @@ void run(
       }
     }
   
+    std::cout << "  >> aMax =       " << aMax << std::endl;
+    std::cout << "  >> amplitudeTruth =       " << amplitudeTruth << std::endl;
     h01->Fill(aMax - amplitudeTruth);
   
     newtree->Fill();
@@ -254,8 +272,6 @@ void run(
 
 int main(int argc, char** argv) {
 
-  std::cout << "With some variable names changed!" << std::endl;
- 
   std::string in_file_name = "data/samples_signal_10GeV_pu_0.root";
   if (argc>=2) {
     in_file_name = argv[1];

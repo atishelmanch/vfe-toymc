@@ -30,6 +30,7 @@ void plotPulse (std::string nameInputFile = "output.root", std::string nsample, 
  std::vector<double>* pulseShapeTemplate     = new std::vector<double>;
  
  float NFREQ;
+ double chiSquare;
  
  tree->SetBranchAddress("nWF",      &nWF);
  tree->SetBranchAddress("waveform", &waveform);
@@ -38,6 +39,7 @@ void plotPulse (std::string nameInputFile = "output.root", std::string nsample, 
  tree->SetBranchAddress("activeBXs", &activeBXs);
  tree->SetBranchAddress("nFreq",   &NFREQ);
  tree->SetBranchAddress("pulseShapeTemplate",   &pulseShapeTemplate);
+ tree->SetBranchAddress("chiSquare",      &chiSquare);
  
  
  tree->GetEntry(nEvent);
@@ -102,13 +104,15 @@ void plotPulse (std::string nameInputFile = "output.root", std::string nsample, 
  
  TCanvas* ccPulseAndReco = new TCanvas ("ccPulseAndReco","",800,600);
  TGraph *grPulseRecoAll = new TGraph();
- TGraph *grPulseReco[samplesReco->size()];
+ TGraph *grPulseReco[20];  // more than enough space
  std::cout << " samplesReco->size() = " << samplesReco->size() << std::endl;
  std::cout << " activeBXs->size() = " << activeBXs->size() << std::endl;
  std::cout << " pulseShapeTemplate->size() = " << pulseShapeTemplate->size() << std::endl;
  std::cout << " samples->size() = " << samples->size() << std::endl;
  
- TLegend* leg = new TLegend(0.7,0.2,0.9,0.9);
+ //TLegend* leg = new TLegend(0.7,0.2,0.9,0.9);
+ TLegend* leg = new TLegend(0.9,0.2,1.0,0.9);
+ TPaveText* box = new TPaveText(0.9,0.9,1.0,1.0, "NDC");
  
  std::vector<float> totalRecoSpectrum;
  for(int i=0; i<samples->size(); i++){
@@ -148,6 +152,9 @@ void plotPulse (std::string nameInputFile = "output.root", std::string nsample, 
   grPulseRecoAll->SetPoint(i, i * NFREQ, totalRecoSpectrum.at(i));
  }
  
+ TString chiSquareString = Form ("#chi^{2} = %f", chiSquare);
+ box->AddText(chiSquareString.Data());
+ 
  grPulseRecoAll->SetMarkerColor(kMagenta);
  grPulseRecoAll->SetLineColor(kMagenta);
  grPulseRecoAll->SetLineStyle(1);
@@ -156,9 +163,13 @@ void plotPulse (std::string nameInputFile = "output.root", std::string nsample, 
  grPulseRecoAll->Draw("PL");
  grPulse->GetXaxis()->SetTitle("time [ns]");
  
+ box->Draw();
  
  leg->Draw();
- 
+
+ png_name = nameWF + "_" + nsample + "_" + nfreq + "_PulseRecoAll.png";
+ png_name_cst = png_name.c_str();
+ ccPulseAndReco->SaveAs(png_name_cst);
  
  
  

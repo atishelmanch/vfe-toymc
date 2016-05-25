@@ -6,6 +6,7 @@
 #include </usr/include/eigen3/Eigen/Dense>
 #include <set>
 #include <array>
+#include <vector>
 
 typedef Eigen::Matrix<double,Eigen::Dynamic,1> SampleVector;
 typedef Eigen::Matrix<double,Eigen::Dynamic,1> FullSampleVector;
@@ -46,6 +47,9 @@ class PulseChiSqSNNLS {
    const PulseVector* X() const { return _ampvecmin; }
    const PulseVector* Errors() const { return _errvec; }
    const BXVector* BXs() const { return _bxsmin; }
+
+   const int OuterIterations() const { return _outer_iterations; }
+   const std::vector<int>* InnerIterations() const { return _inner_iterations; }
    
    
    double ChiSq() const { return _chisq; }
@@ -81,6 +85,10 @@ protected:
    BXVector* _bxsmin;
    unsigned int _nP;
  
+   int _outer_iterations;
+   std::vector<int>* _inner_iterations;
+
+
    int _NSAMPLES;
    float _NFREQ;
     

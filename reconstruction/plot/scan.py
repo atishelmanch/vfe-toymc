@@ -147,7 +147,9 @@ def sigma_eff_list(amp_list):
     n_entries = len(amp_list)
     one_sigma = 0.68 * n_entries
 
-    window_size = amp_list[-1] - amp_list[0]
+    last_start_value, last_end_value = amp_list[-1], amp_list[0]
+    window_size = last_start_value - last_end_value
+    print window_size
 
     for start_index in range(0, n_entries - 1):
         start_value = amp_list[start_index]
@@ -157,7 +159,8 @@ def sigma_eff_list(amp_list):
             sum_in_range += 1
             if (sum_in_range >= one_sigma) and \
                (end_value - start_value < window_size):
-                window_size = end_value - start_value
+                last_start_value, last_end_value = start_value, end_value
+                window_size = last_start_value - last_end_value
                 break
         else:
             # No window was found so we can drop out of the loop
@@ -165,8 +168,8 @@ def sigma_eff_list(amp_list):
             # not the if statement
             break
 
-    print "Window size of %f, between (%f, %f)." % (window_size,
-                                                    start_value, end_value)
+    print "Window size of %f, between (%f, %f)." % (
+        window_size, last_start_value, last_end_value)
 
 
     sigma = window_size / 2.0
