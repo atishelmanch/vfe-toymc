@@ -49,7 +49,7 @@ class PulseChiSqSNNLS {
    const BXVector* BXs() const { return _bxsmin; }
 
    const int OuterIterations() const { return _outer_iterations; }
-   const std::vector<int>* InnerIterations() const { return _inner_iterations; }
+   const std::vector<int>& InnerIterations() const { return *_inner_iterations; }
    
    
    double ChiSq() const { return _chisq; }

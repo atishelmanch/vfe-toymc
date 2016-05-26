@@ -213,8 +213,8 @@ void run(
     chiSquare = chisq;
 
     outerIterations = pulsefunc.OuterIterations();
-    outerIterationsCheck = pulsefunc.InnerIterations()->size();
-    innerIterations = *(pulsefunc.InnerIterations());
+    outerIterationsCheck = pulsefunc.InnerIterations().size();
+    innerIterations = pulsefunc.InnerIterations();
   
     ipulseintime = 0;
     for (unsigned int ipulse=0; ipulse<pulsefunc.BXs()->rows(); ++ipulse) {
