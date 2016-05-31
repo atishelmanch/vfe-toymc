@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
 
   // Default variables
   // time shift in ns
-  int shift = 0;
+  float shift = 0;
   // number of events to generate
   int nEventsTotal = 1000;
   // number of samples per impulse
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
   char * wf_name;
 
   // Changing variables if passed in on the command line
-  if (argc>=2) shift = atoi(argv[1]);
+  if (argc>=2) shift = atof(argv[1]);
   if (argc>=3) nEventsTotal = atoi(argv[2]);
   if (argc>=4) NSAMPLES = atoi(argv[3]);
   if (argc>=5) NFREQ = atof(argv[4]);
@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
 
   TFile *file = new TFile(wf_file_name.c_str());
   TString filenameOutput = 
-          Form("input/mysample_%d_%d_%d_%.2f_%.2f_%.2f_%.2f_%.2f_%s.root", 
+          Form("input/mysample_%d_%.3f_%d_%.2f_%.2f_%.2f_%.2f_%.2f_%s.root", 
           nEventsTotal, shift, NSAMPLES, NFREQ, signalAmplitude, nPU, sigmaNoise, puFactor, wf_name);
   TFile *fileOut = new TFile(filenameOutput.Data(),"recreate");
  
@@ -121,7 +121,7 @@ int main(int argc, char** argv) {
 
   // Making the tree
   TTree *treeOut = new TTree("Samples", "");
-  treeOut->Branch("shift",          &shift,           "shift/I");
+  treeOut->Branch("shift",          &shift,           "shift/F");
   treeOut->Branch("nSmpl",          &nSmpl,           "nSmpl/I");
   treeOut->Branch("nFreq",          &nFreq,           "nFreq/F");
   treeOut->Branch("amplitudeTruth", &amplitudeTruth,  "amplitudeTruth/D");
@@ -204,7 +204,7 @@ int main(int argc, char** argv) {
 
     // Add signal (that includes already the pileup!)
     for (int i=0; i < NSAMPLES; ++i) {
-      int index = 4*(IDSTART + i * NFREQ - shift);
+      int index = TMath::Nint(4*(IDSTART + i * NFREQ - shift));
       samples.at(i) += waveform.at(index);
     }    
 
