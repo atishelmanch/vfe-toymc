@@ -24,8 +24,10 @@ int main(int argc, char** argv) {
   TRandom rnd;
 
   // Default variables
-  // time shift in ns
-  float shift = 0;
+  // time shift in ns of pulse
+  float pulse_shift = 0;
+  // time shift in ns of pileup
+  float pileup_shift = 0;
   // number of events to generate
   int nEventsTotal = 1000;
   // number of samples per impulse
@@ -48,7 +50,7 @@ int main(int argc, char** argv) {
   char * wf_name;
 
   // Changing variables if passed in on the command line
-  if (argc>=2) shift = atof(argv[1]);
+  if (argc>=2) pulse_shift = atof(argv[1]);
   if (argc>=3) nEventsTotal = atoi(argv[2]);
   if (argc>=4) NSAMPLES = atoi(argv[3]);
   if (argc>=5) NFREQ = atof(argv[4]);
@@ -92,9 +94,9 @@ int main(int argc, char** argv) {
 
 
   TFile *file = new TFile(wf_file_name.c_str());
-  TString filenameOutput = 
-          Form("input/mysample_%d_%.3f_%d_%.2f_%.2f_%.2f_%.2f_%.2f_%s.root", 
-          nEventsTotal, shift, NSAMPLES, NFREQ, signalAmplitude, nPU, sigmaNoise, puFactor, wf_name);
+  TString filenameOutput =
+          Form("input/mysample_%d_%.3f_%.3f_%d_%.2f_%.2f_%.2f_%.3f_%.2f_%s.root", 
+          nEventsTotal, pulse_shift, pileup_shift, NSAMPLES, NFREQ, signalAmplitude, nPU, sigmaNoise, puFactor, wf_name);
   TFile *fileOut = new TFile(filenameOutput.Data(),"recreate");
  
   // Get PDF for pileup
@@ -116,23 +118,26 @@ int main(int argc, char** argv) {
   int nWF = WFLENGTH;
   std::vector<int> nMinBias;
   std::vector<double> energyPU; // along a complete LHC circle
-  std::vector<double> waveform;
+  std::vector<double> pulse_signal;
+  std::vector<double> pileup_signal;
   double signalTruth = signalAmplitude;
 
   // Making the tree
   TTree *treeOut = new TTree("Samples", "");
-  treeOut->Branch("shift",          &shift,           "shift/F");
+  treeOut->Branch("pulse_shift",    &pulse_shift,     "pulse_shift/F");
+  treeOut->Branch("pileup_shift",   &pileup_shift,    "pileup_shift/F");
   treeOut->Branch("nSmpl",          &nSmpl,           "nSmpl/I");
   treeOut->Branch("nFreq",          &nFreq,           "nFreq/F");
   treeOut->Branch("amplitudeTruth", &amplitudeTruth,  "amplitudeTruth/D");
-  treeOut->Branch("samples",        &samples );
+  treeOut->Branch("samples",        &samples);
   treeOut->Branch("nPU",            &nPU,             "nPU/F");
   treeOut->Branch("BX0",            &BX0,             "BX0/I");
   treeOut->Branch("nBX",            &nBX,             "nBX/I");
   treeOut->Branch("nWF",            &nWF,             "nWF/I");
-  treeOut->Branch("nMinBias",       &nMinBias );
+  treeOut->Branch("nMinBias",       &nMinBias);
   treeOut->Branch("energyPU",       &energyPU);
-  treeOut->Branch("waveform",       &waveform );
+  treeOut->Branch("pulse_signal",   &pulse_signal);
+  treeOut->Branch("pileup_signal",  &pileup_signal);
   treeOut->Branch("signalTruth",    &signalTruth,     "signalTruth/D");
   treeOut->Branch("sigmaNoise",     &sigmaNoise,      "sigmaNoise/F");
   treeOut->Branch("puFactor",       &puFactor,        "puFactor/F");
@@ -161,10 +166,14 @@ int main(int argc, char** argv) {
       }
     }
 
-    // Initialize the Waveform to be zero everwhere
-    waveform.clear();
+    // Initialize the pulse and pileup signals to be zero everwhere
+    pulse_signal.clear();
     for (int iwf = 0; iwf < nWF; iwf++) {
-      waveform.push_back(0.);
+      pulse_signal.push_back(0.);
+    }
+    pileup_signal.clear();
+    for (int iwf = 0; iwf < nWF; iwf++) {
+      pileup_signal.push_back(0.);
     }
 
     // Add pileup to the waveform
@@ -172,15 +181,15 @@ int main(int argc, char** argv) {
     for (int ibx = 0; ibx < nBX; ibx++) {
       for (int iwf = 0; iwf < nWF; iwf++) {
         double t = (BX0 - ibx) * 25. + iwf/4. - (500 / 2) + 25.;
-        double temp = waveform.at(iwf);
+        double temp = pileup_signal.at(iwf);
         // adding the pu times the scale factor to the waveform
-        waveform.at(iwf) = temp + energyPU.at(ibx) * pSh.fShape(t) * puFactor;
+        pileup_signal.at(iwf) = temp + energyPU.at(ibx) * pSh.fShape(t) * puFactor;
       }
     }
 
     // Add signal to the waveform
     for (int iwf = 0; iwf < nWF; iwf++) {
-      waveform.at(iwf) += signalTruth * pSh.fShape(iwf/4. - (500 / 2) + 25.);
+      pulse_signal.at(iwf) += signalTruth * pSh.fShape(iwf/4. - (500 / 2) + 25.);
     }
 
     // Construct the digitized points
@@ -202,10 +211,12 @@ int main(int argc, char** argv) {
       samples.at(i) *= sigmaNoise;
     }
 
-    // Add signal (that includes already the pileup!)
+    // Add signal and pileup
     for (int i=0; i < NSAMPLES; ++i) {
-      int index = TMath::Nint(4*(IDSTART + i * NFREQ - shift));
-      samples.at(i) += waveform.at(index);
+      int pulse_index = TMath::Nint(4*(IDSTART + i * NFREQ - pulse_shift));
+      samples.at(i) += pulse_signal.at(pulse_index);
+      int pileup_index = TMath::Nint(4*(IDSTART + i * NFREQ - pileup_shift));
+      samples.at(i) += pileup_signal.at(pileup_index);
     }    
 
     // Adding energyPU to the true amplitude
