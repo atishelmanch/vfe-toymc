@@ -64,6 +64,7 @@ int main(int argc, char** argv) {
   std::string wf_name_string = "CRRC43";
   wf_name = (char *) wf_name_string.c_str();
   }
+  if (argc>=11) pileup_shift = atof(argv[10]);
  
   int IDSTART = 7*25;
   int WFLENGTH = 500*4; // step 1/4 ns in waveform
