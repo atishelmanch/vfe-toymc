@@ -13,7 +13,8 @@ def main(files, outfile_name="results.csv", in_time_bx=4):
 
     # Logging information headers used for writing to output file
     param_names = ["nEvents", "pulse_shift", "pileup_shift", "nSmpl", "nFreq",
-                   "amplitudeTruth", "nPU", "sigmaNoise", "puFactor"]
+                   "amplitudeTruth", "nPU", "sigmaNoise", "puFactor",
+                   "pulse_tau", "wf_name", "in_time_bx"]
     reco_stat_names  = ["avg_reco_amplitude", "sigma_eff", "sigma_eff_err"]
     outputwriter.writerow(param_names + reco_stat_names)
 
@@ -31,7 +32,8 @@ def main(files, outfile_name="results.csv", in_time_bx=4):
         tree.GetEntry(0)
         params = [nEvents, tree.pulse_shift, tree.pileup_shift,
                   tree.nSmpl, tree.nFreq, tree.amplitudeTruth,
-                  tree.nPU, tree.sigmaNoise, tree.puFactor]
+                  tree.nPU, tree.sigmaNoise, tree.puFactor,
+                  tree.pulse_tau, tree.wf_name, in_time_bx]
 
         for name, value in zip(param_names, params):
           print '{0:>17}: {1:>5}'.format(name, value)
@@ -90,7 +92,10 @@ def mean_sigma_eff(amp_list):
 
 
     sigma = window_size / 2.0
-    sigma_err = sigma / sqrt(2.0*(n_entries - 1.0))
+    if n_entries > 1:
+      sigma_err = sigma / sqrt(2.0*(n_entries - 1.0))
+    else:
+      sigma_err = 0
 
     return [mean, sigma, sigma_err]
 
