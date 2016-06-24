@@ -44,6 +44,8 @@ int main(int argc, char** argv) {
   float puFactor = 1;
   // total number of bunches in "LHC" bunch train
   int NBXTOTAL = 2800;
+  // CRRC shaping time in ns. For QIE, set it to 1e-1
+  float pulse_tau = 43;
   // ADD WHAT THIS IS
   const float eta = 0.0;
 
@@ -92,6 +94,8 @@ int main(int argc, char** argv) {
 
   pSh.SetFNAMESHAPE(wf_file_name);
   pSh.Init();
+  // Get the value of tau form the (initialized!) pulse
+  pulse_tau = pSh.tau();
 
 
   TFile *file = new TFile(wf_file_name.c_str());
@@ -142,6 +146,9 @@ int main(int argc, char** argv) {
   treeOut->Branch("signalTruth",    &signalTruth,     "signalTruth/D");
   treeOut->Branch("sigmaNoise",     &sigmaNoise,      "sigmaNoise/F");
   treeOut->Branch("puFactor",       &puFactor,        "puFactor/F");
+  treeOut->Branch("pulse_tau",      &pulse_tau,       "pulse_tau/F");
+  // wf_name is already a pointer (char *) so we don't need to use &
+  treeOut->Branch("wf_name",        wf_name,         "wf_name/C");
 
   for (int ievt = 0; ievt < nEventsTotal; ievt++) {
     if (!(ievt%100)) {

@@ -56,6 +56,7 @@ class Pulse{
   float tMin() const { return _tMin; };
   float fPar0() const { return _fPar0; };
   float fPar1() const { return _fPar1; };
+  float tau() const { return _TAU; };
   double weight(int i) const { return _weights.at(i); };
   double corr(int i) const { return _mC[i]; };
   double cholesky(int i, int j) const;
