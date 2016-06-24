@@ -4,13 +4,16 @@ import csv
 from ROOT import *
 
 
-def get_data(csv_input, value_names, outer_keys):
+def get_data(csv_input, value_names, inner_keys, ignore_keys):
   reader = csv.DictReader(csv_input)
-  data = collections.defaultdict(list)
+  data = collections.defaultdict(lambda: collections.defaultdict(list))
   for row in reader:
-    key = tuple(float(row[k]) for k in outer_keys)
+    key = tuple(float(row[k]) for k in inner_keys)
     value = tuple(float(row[v]) for v in value_names)
-    data[key].append(value)
+    outer_key = ':'.join(
+        '%s-%s' % kv for kv in sorted(row.items()) if kv[0] not in (
+            inner_keys + value_names + ignore_keys))
+    data[outer_key][key].append(value)
   return data
 
 
@@ -24,18 +27,17 @@ def make_graph_line(data):
 
 
 # data[(Nsample, Nfreq)] = [(x, y, y_err), (x, y, y_err), ...]
-def make_multigraph(data, out_root_file=None, title="", x_axis_title="",
-                   save_canvas_as=""):
-
+def make_multigraph(data, out_root_file=None, graph_name="gr",
+                    title="", x_axis_title="",
+                    save_canvas_as=""):
 
   lines = [(10.0, 25.0), (20.0, 12.5), (40., 6.25)]
 
   g_lines = []
 
-  # First we iterate through all combos to make points/lines to fill
   for line_idx, line_val in enumerate(lines):
       graph_line = make_graph_line(data[line_val])
-      graph_line.SetName("gr_%.2f_%.2f" % (line_val))
+      graph_line.SetName("%s:nSmpl-%.2f:nFreq-%.2f" % ((graph_name,) + line_val))
 
       graph_line.SetMarkerColor(100 - (line_idx*12)%50)
       graph_line.SetLineColor(100 - (line_idx*12)%50)
@@ -56,7 +58,7 @@ def make_multigraph(data, out_root_file=None, title="", x_axis_title="",
   #legend = TLegend(0.4,0.8,0.8,0.95)
   legend = TLegend()
 
-  graph.SetName("multigr")
+  graph.SetName("multi_%s" % graph_name)
   graph.SetTitle(title)
   legend.SetName(title + "_leg")
   legend.SetBorderSize(1)
@@ -75,12 +77,15 @@ def make_multigraph(data, out_root_file=None, title="", x_axis_title="",
 
 def main(infile_name="results.csv", outfile_name="plot_sigma.root", save_canvas_as=""):
   f = open(infile_name, "r")
-  d = get_data(f, ("sigmaNoise", "sigma_eff", "sigma_eff_err"), ("nSmpl", "nFreq"))
+  d = get_data(f, ("sigmaNoise", "sigma_eff", "sigma_eff_err"), ("nSmpl", "nFreq"), ("avg_reco_amplitude",))
   f.close()
 
   outrootfile = TFile(outfile_name, "RECREATE")
-  make_multigraph(d, outrootfile, save_canvas_as=save_canvas_as)
+  for outer_key, inner_data in d.iteritems():
+    print outer_key
+    make_multigraph(inner_data, outrootfile, outer_key)
   outrootfile.Close()
 
 
-main()
+if __name__ == '__main__':
+  main("results.csv", "plot_sigma_more_complicated.root")
