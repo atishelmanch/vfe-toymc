@@ -1,16 +1,17 @@
-Plot tools
+Analysis tools
 ====
 
 
 Scan all results:
 
-    python plot/scan.py outputfit/output_*.root
+    python analysis/scan.py outputfit/output_*.root
     
-the output is a file "results.txt".
+the output is a file "results.csv".
     
 Then plot:
 
-    python plot/plotResult.py
-    
+    python analysis/plot_sigma.py
 
+Then make second-order plots:
 
+    python analysis/sigma_slope.py
