@@ -16,39 +16,31 @@ def reco_large_enough(tree, reco_fraction_cutoff=0.1, in_time_bx=4):
   return tree.samplesReco.at(in_time_bx) > reco_fraction_cutoff * tree.amplitudeTruth
 
 
-def classify_recos(filename, in_time_bx=4, test=lambda x: True):
-  tfile = TFile(filename, "Read")
-  tree = tfile.Get("RecoAndSim")
-  entries = tree.GetEntries()
+def classify_recos(filename, in_time_bx=4, test=lambda x: True, bins=100, xmin=0, xmax=20):
 
   good_list = []
   bad_list = []
-  for event in range(0, entries):
-    tree.GetEntry(event)
-    reco_amplitude = tree.samplesReco.at(in_time_bx)
-    if test(tree):
-      good_list.append(reco_amplitude)
-    else:
-      bad_list.append(reco_amplitude)
-  tfile.Close()
-  return good_list, bad_list
-
-
-def make_histograms(name_prefix, input_list, bins=100, xmin=0, xmax=20):
-
-  prefix = name_prefix
-  prefix += '_reco_at_bx_%d_range_%.2f_%.2f' % (in_time_bx, xmin, xmax)
+  prefix = filename.replace('.root', '')
+  prefix += '_reco_at_bx_%d' % in_time_bx
   all_hist = TH1F("%s_all" % prefix, "", bins, xmin, xmax)
   good_hist = TH1F("%s_good" % prefix, "", bins, xmin, xmax)
   bad_hist = TH1F("%s_bad" % prefix, "", bins, xmin, xmax)
 
-  for event in input_list:
+  tfile = TFile(filename, "Read")
+  tree = tfile.Get("RecoAndSim")
+  entries = tree.GetEntries()
+  for event in range(0, entries):
+    tree.GetEntry(event)
+    reco_amplitude = tree.samplesReco.at(in_time_bx)
     all_hist.Fill(reco_amplitude)
     if test(tree):
+      good_list.append(reco_amplitude)
       good_hist.Fill(reco_amplitude)
     else:
+      bad_list.append(reco_amplitude)
       bad_hist.Fill(reco_amplitude)
-  return all_hist, good_hist, bad_hist
+  tfile.Close()
+  return all_hist, good_hist, bad_hist, good_list, bad_list
 
 
 def draw_together(histograms, colors=[], save_canvas_as="",
