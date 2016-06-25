@@ -36,7 +36,10 @@ def make_multigraph(data, out_root_file=None, graph_name="gr",
   g_lines = []
 
   for line_idx, line_val in enumerate(lines):
-      graph_line = make_graph_line(data[line_val])
+      try:
+        graph_line = make_graph_line(data[line_val])
+      except KeyError:
+        continue
       graph_line.SetName("%s:nSmpl-%.2f:nFreq-%.2f" % ((graph_name,) + line_val))
 
       graph_line.SetMarkerColor(100 - (line_idx*12)%50)
@@ -67,7 +70,7 @@ def make_multigraph(data, out_root_file=None, graph_name="gr",
       graph.Add(g[0])
       legend.AddEntry(g[0], g[1], "p")
   graph.Draw("APL")
-  graph.GetXaxis().SetTitle(x_axis_title)
+  #graph.GetXaxis().SetTitle(x_axis_title)
   legend.Draw()
   if out_root_file:
     graph.Write()
@@ -88,4 +91,4 @@ def main(infile_name="results.csv", outfile_name="plot_sigma.root", save_canvas_
 
 
 if __name__ == '__main__':
-  main("results.csv", "plot_sigma_more_complicated.root")
+  main()
