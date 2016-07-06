@@ -3,7 +3,7 @@
 
 // #include "EigenMatrixTypes.h"
 
-#include </usr/include/eigen3/Eigen/Dense>
+#include </usr/include/eigen3/Dense>
 #include <set>
 #include <array>
 #include <vector>
