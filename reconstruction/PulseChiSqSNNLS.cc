@@ -8,8 +8,8 @@ PulseChiSqSNNLS::PulseChiSqSNNLS() :
   _computeErrors(true)
 {
   
-// _debug = false;
-  _debug = true;
+ _debug = false;
+//  _debug = true;
  
   Eigen::initParallel();
       
@@ -229,7 +229,7 @@ bool PulseChiSqSNNLS::Minimize(const SampleMatrix &samplecor, double pederr, con
   bool status = false;
   while (true) {
    
-   std::cout << " iter = " << iter << " :: " << maxiter << std::endl << std::endl;
+// std::cout << " iter = " << iter << " :: " << maxiter << std::endl << std::endl;
    if (iter>=maxiter) {
     //      edm::LogWarning("PulseChiSqSNNLS::Minimize") << "Max Iterations reached at iter " << iter <<  std::endl << std::endl;
     break;
@@ -348,16 +348,16 @@ double PulseChiSqSNNLS::ComputeChiSq() {
  //std::cout << "_covdecomp_support->llt().matrixL()  " << _covdecomp_support->llt().matrixL() << std::endl << std::endl;
  //Eigen::MatrixXd L(_covdecomp_support->llt().matrixL());
  //std::cout << "_covdecomp_support->llt().matrixL()  " << std::endl << L << std::endl << std::endl;
- std::cout << "*_pulsemat  " << std::endl << *_pulsemat << std::endl << std::endl;
- std::cout << "*_ampvec  " << std::endl << *_ampvec << std::endl << std::endl;
- std::cout << "*_sampvec  " << std::endl << *_sampvec << std::endl << std::endl;
+if (_debug)  std::cout << "*_pulsemat  " << std::endl << *_pulsemat << std::endl << std::endl;
+if (_debug)  std::cout << "*_ampvec  " << std::endl << *_ampvec << std::endl << std::endl;
+if (_debug)  std::cout << "*_sampvec  " << std::endl << *_sampvec << std::endl << std::endl;
  //std::cout << "_covdecomp_support->llt().matrixL().solve((*_pulsemat) * (*_ampvec) - (*_sampvec) )  " << std::endl << _covdecomp_support->llt().matrixL().solve((*_pulsemat) * (*_ampvec) - (*_sampvec) )  << std::endl << std::endl;
- std::cout << "(*_pulsemat) * (*_ampvec) - (*_sampvec) " << std::endl << (*_pulsemat) * (*_ampvec) - (*_sampvec) << std::endl << std::endl;
+if (_debug)  std::cout << "(*_pulsemat) * (*_ampvec) - (*_sampvec) " << std::endl << (*_pulsemat) * (*_ampvec) - (*_sampvec) << std::endl << std::endl;
  //std::cout << "_covdecomp_support->llt().matrixL().solve((*_pulsemat) * (*_ampvec) - (*_sampvec) ).squaredNorm()  " << _covdecomp_support->llt().matrixL().solve((*_pulsemat) * (*_ampvec) - (*_sampvec) ).squaredNorm()  << std::endl << std::endl;
  //std::cout << "*_covdecomp  " << std::endl << *_covdecomp << std::endl << std::endl;
  Eigen::MatrixXd L2(_covdecomp->matrixL());
- std::cout << "_covdecomp->matrixL()  " << std::endl << L2 << std::endl << std::endl;
- std::cout << "_covdecomp->matrixL().solve((*_pulsemat) * (*_ampvec) - (*_sampvec) )  " << std::endl << _covdecomp->matrixL().solve((*_pulsemat) * (*_ampvec) - (*_sampvec) ) << std::endl << std::endl;
+if (_debug)  std::cout << "_covdecomp->matrixL()  " << std::endl << L2 << std::endl << std::endl;
+if (_debug)  std::cout << "_covdecomp->matrixL().solve((*_pulsemat) * (*_ampvec) - (*_sampvec) )  " << std::endl << _covdecomp->matrixL().solve((*_pulsemat) * (*_ampvec) - (*_sampvec) ) << std::endl << std::endl;
  //return _covdecomp_support->llt().matrixL().solve((*_pulsemat) * (*_ampvec) - (*_sampvec) ).squaredNorm();
  return _covdecomp->matrixL().solve((*_pulsemat) * (*_ampvec) - (*_sampvec) ).squaredNorm();
  
@@ -424,7 +424,7 @@ bool PulseChiSqSNNLS::NNLS() {
 
   int iter = 0;
   while (true) {
-    std::cout << " iter = " << iter << " :: " << maxiter << std::endl << std::endl;
+    //std::cout << " iter = " << iter << " :: " << maxiter << std::endl << std::endl;
     //can only perform this step if solution is guaranteed viable
     if (iter>0 || _nP==0) {
       if ( _nP==npulse ) break;                  

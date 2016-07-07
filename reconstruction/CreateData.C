@@ -19,9 +19,9 @@
 #include <iostream>
 #include <TRandom.h>
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv) {      //argc is argument count, argv is argument vector
 
-  TRandom rnd;
+  TRandom rnd;    //declaring of Trandom class, called rnd
 
   // Default variables
   // time shift in ns of pulse
@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
   int nEventsTotal = 1000;
   // number of samples per impulse
   int NSAMPLES = 10;
-  // number of samples per impulse
+  // Sampling period in nanoseconds
   float NFREQ = 25;
   // number of pile up
   float nPU = 0;
@@ -46,10 +46,10 @@ int main(int argc, char** argv) {
   int NBXTOTAL = 2800;
   // CRRC shaping time in ns. For QIE, set it to 1e-1
   float pulse_tau = 43;
-  // ADD WHAT THIS IS
+  // Psuedorapidity
   const float eta = 0.0;
 
-  char * wf_name;
+  char * wf_name;  //waveform name, char * is a string (* is a pointer)
 
   // Changing variables if passed in on the command line
   if (argc>=2) pulse_shift = atof(argv[1]);
@@ -61,11 +61,11 @@ int main(int argc, char** argv) {
   if (argc>=8) sigmaNoise = atof(argv[7]);
   if (argc>=9) puFactor = atof(argv[8]);
   if (argc>=10) {
-      wf_name = argv[9];
-  } else {
-  std::string wf_name_string = "CRRC43";
-  wf_name = (char *) wf_name_string.c_str();
-  }
+      wf_name = argv[9];  //arrays are zero indexed, 9 corresponds to 10th entry
+} else {
+  	std::string wf_name_string = "CRRC43";
+  	wf_name = (char *) wf_name_string.c_str();
+  	}
   if (argc>=11) pileup_shift = atof(argv[10]);
  
   int IDSTART = 7*25;
@@ -74,6 +74,7 @@ int main(int argc, char** argv) {
     WFLENGTH = (IDSTART + NSAMPLES * NFREQ)*4 + 100;
   }
 
+  //Reading off input values to user
   std::cout << " NSAMPLES = " << NSAMPLES << std::endl;
   std::cout << " NFREQ = " << NFREQ << std::endl;
   std::cout << " nPU = " << nPU << std::endl;
@@ -82,7 +83,8 @@ int main(int argc, char** argv) {
   std::cout << " WFLENGTH = " << WFLENGTH << std::endl;
   std::cout << " nEventsTotal = " << nEventsTotal << std::endl;
  
-  Pulse pSh;
+  //setting up instance of Pulse class called pSh, see Pulse.h
+  Pulse pSh;                 //Instance of Pulse class
   pSh.SetNSAMPLES(NSAMPLES);
   pSh.SetNFREQ(NFREQ);
   pSh.SetIDSTART(IDSTART);
@@ -150,6 +152,7 @@ int main(int argc, char** argv) {
   // wf_name is already a pointer (char *) so we don't need to use &
   treeOut->Branch("wf_name",        wf_name,         "wf_name/C");
 
+  //Displays the progress of the event analysis to the user
   for (int ievt = 0; ievt < nEventsTotal; ievt++) {
     if (!(ievt%100)) {
       std::cout << " ievt = " << ievt << " :: " << nEventsTotal << std::endl;
