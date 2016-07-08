@@ -12,18 +12,16 @@ def fit_waveform(input_files, waveform, already_fit_files, dryrun=0):
 def multifit(f, already_fit_files, dryrun=0):
   i = 'input/%s' % f
   o = 'outputfit/%s' % f.replace('mysample', 'output')
-  logfile = f.replace('mysample', 'Example07.multifit.debugPulseChiSqSNNLS.moreoutput').replace('root', 'txt')
+ 
   if os.path.exists(o):
     #print "skipping %s --> %s because %s already exists." %(i, o, o)
     already_fit_files += 1
     return  # not recreating+overwriting existing files
   print f
   params = f.split('_')
-  NSAMPLES, NFREQ = params[3 : 5]
+  NSAMPLES, NFREQ = params[4 : 6]
   waveform = params[-1].split('.')[0]
   toExec = 'bin/Example07.multifit %s %s %s %s %s' % (i, o, NSAMPLES, NFREQ, waveform)
-  toExec = 'bin/Example07.multifit.debugPulseChiSqSNNLS.moreoutput %s %s %s %s %s > %s &2>&1' % (i, o, NSAMPLES, NFREQ, waveform, logfile)
-  toExec = 'bin/Example07.multifit.chiSq.iterations %s %s %s %s %s' % (i, o, NSAMPLES, NFREQ, waveform)
   print toExec
   if (dryrun == 0) :
       os.system(toExec)
