@@ -17,11 +17,11 @@
 #include <TRandom.h>
 #include <TMath.h>
 #include <iostream>
-#include <TRandom.h>
+#include <TRandom.h> //included twice?
 
 int main(int argc, char** argv) {      //argc is argument count, argv is argument vector
 
-  TRandom rnd;    //declaring of Trandom class, called rnd
+  TRandom rnd;    //declaring of Trandom class
 
   // Default variables
   // time shift in ns of pulse

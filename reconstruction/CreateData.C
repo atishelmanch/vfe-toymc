@@ -17,11 +17,11 @@
 #include <TRandom.h>
 #include <TMath.h>
 #include <iostream>
-#include <TRandom.h>
+#include <TRandom.h> //included twice?
 
 int main(int argc, char** argv) {      //argc is argument count, argv is argument vector
 
-  TRandom rnd;    //declaring of Trandom class, called rnd
+  TRandom rnd;    //declaring of Trandom class
 
   // Default variables
   // time shift in ns of pulse
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {      //argc is argument count, argv is argumen
   char * wf_name;  //waveform name, char * is a string (* is a pointer)
 
   // Changing variables if passed in on the command line
-  if (argc>=2) pulse_shift = atof(argv[1]);
+  if (argc>=2) pulse_shift = atof(argv[1]);                                                 
   if (argc>=3) nEventsTotal = atoi(argv[2]);
   if (argc>=4) NSAMPLES = atoi(argv[3]);
   if (argc>=5) NFREQ = atof(argv[4]);

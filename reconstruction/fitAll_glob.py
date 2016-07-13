@@ -1,6 +1,9 @@
 import os
 import sys
 
+
+#Define the function 'fit_waveform'
+
 def fit_waveform(input_files, waveform, already_fit_files, dryrun=0):
   for f in sorted(input_files):
       if waveform not in f:
@@ -8,6 +11,8 @@ def fit_waveform(input_files, waveform, already_fit_files, dryrun=0):
       if not f.startswith('mysample'):
         continue
       multifit(f, already_fit_files, dryrun)
+
+#Define the function 'multifit'
 
 def multifit(f, already_fit_files, dryrun=0):
   i = 'input/%s' % f

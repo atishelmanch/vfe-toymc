@@ -3,12 +3,13 @@
 # % mkdir input
 # To use this script, you must first compile CreateData.C into a bin/ directory:
 # % mkdir bin
-# % g++ -O3 -o bin/CreateData CreateData.C -std=c++11 `root-config --cflags --glibs`
+# % g++ -O3 -o bin/CreateData reconstruction/CreateData.C -Wl,--no-as-needed -lHist -lCore -lMathCore *not sure if core lowercase or uppercase C* -std=c++11 `root-config --cflags --glibs`
 # % python createAll.py
-import os
-import sys
 
-if __name__ == '__main__':
+import os  #imports os module, used here for os.system(toExec)
+import sys #imports sys module, used here for sys.argv
+
+if __name__ == '__main__':  #I believe this executes program only when directly run, not when called in another file.
     # number of events to simulate for each configuration
     NTOYS = 100
 
@@ -23,27 +24,27 @@ if __name__ == '__main__':
     # If all lists are empty, CreateData will not be called at all.
     # More combinations of parameters can be used by altering the loop
     # structure below.
-    PILEUP_SHIFT = 0
+    PILEUP_SHIFT = 0 #Single value while varying other parameters
     PILEUP_SHIFTS = []  
-    PILEUP_SHIFTS = []
+    #PILEUP_SHIFTS = [] extra line?
     PULSE_SHIFT = 0
     PULSE_SHIFTS = []
-    NOISES = [0, 0.1]
     NOISE = 0.0
-    NPUS = [0, 200]
-    NPUS = []
+    NOISES = [0, 0.1]
     NPU = 0
+    NPUS = [0, 200]
+    NPUS = []  #extra line?
 
     # We only use combinations of NSAMPLE and NFREQ that give a total sampling
     # period of 250 ns.
-    NSAMPLE_NFREQ = [ (10, 25), (40, 6.25) ]
+    NSAMPLE_NFREQ = [ (10, 25), (40, 6.25) ] #In nanoseconds I think
 
     # "CRRCXX" refers to a CR-RC pulse with time constant tau = XX.
     # CRRC pulse shaping is compatible with all sampling rates.
     CRRC_WF_NAMES = ["CRRC10", "CRRC90"]
     WF_NFREQ_DICT = {wf : NSAMPLE_NFREQ for wf in CRRC_WF_NAMES}
 
-    QIE_WF_NAMES = ["QIE25", "QIE6"]
+    QIE_WF_NAMES = ["QIE25"]
     WF_NFREQ_DICT.update(
         {wf : [NSAMPLE_NFREQ[i]] for i, wf in enumerate(QIE_WF_NAMES)})
 
@@ -65,7 +66,7 @@ if __name__ == '__main__':
                  PU_FACTOR, wf_name, pileup_shift)
             print toExec
             if (dryrun == 0) :
-              os.system(toExec)
+              os.system(toExec) #Calls bin/CreateData
 
         # loop through the desired numbers of pileup events
         # while holding the other parameters constant at specific values

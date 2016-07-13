@@ -1,6 +1,9 @@
 import os
 import sys
 
+
+#Define the function 'fit_waveform'
+
 def fit_waveform(input_files, waveform, already_fit_files, dryrun=0):
   for f in sorted(input_files):
       if waveform not in f:
@@ -8,6 +11,8 @@ def fit_waveform(input_files, waveform, already_fit_files, dryrun=0):
       if not f.startswith('mysample'):
         continue
       multifit(f, already_fit_files, dryrun)
+
+#Define the function 'multifit'
 
 def multifit(f, already_fit_files, dryrun=0):
   i = 'input/%s' % f
@@ -19,7 +24,7 @@ def multifit(f, already_fit_files, dryrun=0):
     return  # not recreating+overwriting existing files
   print f
   params = f.split('_')
-  NSAMPLES, NFREQ = params[3 : 5]
+  NSAMPLES, NFREQ = params[4 : 6]
   waveform = params[-1].split('.')[0]
   toExec = 'bin/Example07.multifit %s %s %s %s %s' % (i, o, NSAMPLES, NFREQ, waveform)
   print toExec
