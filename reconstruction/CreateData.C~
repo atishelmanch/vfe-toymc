@@ -52,7 +52,7 @@ int main(int argc, char** argv) {      //argc is argument count, argv is argumen
   char * wf_name;  //waveform name, char * is a string (* is a pointer)
 
   // Changing variables if passed in on the command line
-  if (argc>=2) pulse_shift = atof(argv[1]);
+  if (argc>=2) pulse_shift = atof(argv[1]);                                                 
   if (argc>=3) nEventsTotal = atoi(argv[2]);
   if (argc>=4) NSAMPLES = atoi(argv[3]);
   if (argc>=5) NFREQ = atof(argv[4]);
@@ -129,6 +129,8 @@ int main(int argc, char** argv) {      //argc is argument count, argv is argumen
   std::vector<double> pileup_signal;
   double signalTruth = signalAmplitude;
 
+  std::string WFNAME=(std::string) wf_name;
+
   // Making the tree
   TTree *treeOut = new TTree("Samples", "");
   treeOut->Branch("pulse_shift",    &pulse_shift,     "pulse_shift/F");
@@ -150,7 +152,7 @@ int main(int argc, char** argv) {      //argc is argument count, argv is argumen
   treeOut->Branch("puFactor",       &puFactor,        "puFactor/F");
   treeOut->Branch("pulse_tau",      &pulse_tau,       "pulse_tau/F");
   // wf_name is already a pointer (char *) so we don't need to use &
-  treeOut->Branch("wf_name",        wf_name,         "wf_name/C");
+  treeOut->Branch("WFNAME",        &WFNAME      );   //"wf_name/C");
 
   //Displays the progress of the event analysis to the user
   for (int ievt = 0; ievt < nEventsTotal; ievt++) {

@@ -59,18 +59,20 @@ def main(files, outfile_name="results.csv", in_time_bx=4):
 # Takes in a list and calculates the effective sigma, the windowed
 # range which contains 68% of the data (one sigma). Returns a tuple 
 # containing (sigma, sigma_error).
-def mean_sigma_eff(amp_list):
-    amp_list = sorted(amp_list)
+def mean_sigma_eff(amp_list):      
+    amp_list = sorted(amp_list) #orders values from least to greatest
     n_entries = len(amp_list)
 
-    mean = sum(amp_list) / n_entries
+    mean = sum(amp_list) / n_entries #calculates average amplitude value
 
-    one_sigma = 0.68 * n_entries
+    one_sigma = 0.68 * n_entries    #68% of entries value. Maybe use .682? or .682689492?
 
-    last_start_value, last_end_value = amp_list[-1], amp_list[0]
-    window_size = last_start_value - last_end_value
-
-    for start_index in range(0, n_entries - 1):
+    last_start_value, last_end_value = amp_list[-1], amp_list[0]  #element -1 is last element
+    window_size = last_start_value - last_end_value               #element 0 is first element
+   
+    #window_size is the range of values
+    #Loops test 
+    for start_index in range(0, n_entries - 1): 
         found_window = False
         start_value = amp_list[start_index]
         sum_in_range = 0
@@ -78,11 +80,11 @@ def mean_sigma_eff(amp_list):
             end_value = amp_list[end_index]
             sum_in_range += 1
             if (sum_in_range >= one_sigma) and \
-               (end_value - start_value < window_size):
+               (end_value - start_value < window_size):  
                 found_window = True
                 last_start_value, last_end_value = start_value, end_value
                 window_size = last_end_value - last_start_value
-                break
+                break    
         if not found_window:
             # No window was found so we can drop out of the outer loop
             break

@@ -31,7 +31,7 @@ def make_multigraph(data, out_root_file=None, graph_name="gr",
                     title="", x_axis_title="",
                     save_canvas_as=""):
 
-  lines = [(10.0, 25.0), (20.0, 12.5), (40., 6.25)]
+  lines = [(10.0, 25.0), (40., 6.25)]
 
   g_lines = []
 

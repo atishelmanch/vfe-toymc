@@ -17,12 +17,36 @@
 
 
 void run(
-    std::string in_file_name, std::string out_file_name,
-    int NSAMPLES, float NFREQ, std::string wf_name) {
+    std::string in_file_name, std::string out_file_name){
  
   std::cout << " run ..." << std::endl;
  
+  std::cout << " in_file_name = " << in_file_name << std::endl;
+  TFile *input_file = new TFile(in_file_name.c_str());
 
+  
+  int NSAMPLES;
+  float NFREQ;
+  std::string *wf_name = new std::string;
+  
+  std::vector<double>* samples = new std::vector<double>;
+  double amplitudeTruth;
+  TTree *tree = (TTree*) input_file->Get("Samples");
+  tree->SetBranchAddress("amplitudeTruth",      &amplitudeTruth);
+  tree->SetBranchAddress("samples",             &samples);
+  tree->SetBranchAddress("nSmpl",             &NSAMPLES);
+  tree->SetBranchAddress("nFreq",             &NFREQ);
+  tree->SetBranchAddress("WFNAME",             &wf_name);
+ 
+  int nentries = tree->GetEntries();
+  tree->GetEntry(0);
+ 
+  std::cout << " nentries = " << nentries << std::endl;
+  std::cout << " NSAMPLES = " << NSAMPLES << std::endl;
+  std::cout << " amplitudeTruth = " << amplitudeTruth << std::endl;
+  std::cout << " Test line. You've made it to this point." << std::endl;
+  std::cout << " wf_name = " << wf_name << std::endl;
+  std::cout << " You've made it past wf_name " << std::endl;
   int IDSTART = 7*25;
  
   int WFLENGTH = 500*4; //---- step 1/4 ns in waveform
@@ -43,7 +67,7 @@ void run(
  
   std::string wf_file_name = (
       ((std::string) "data/EmptyFile") +
-      ((std::string) wf_name) +
+      ((std::string) *wf_name) + 
       ((std::string) ".root"));
   std::cout << wf_file_name << std::endl;
 
@@ -126,20 +150,6 @@ void run(
   std::cout << " end init " << std::endl;
  
  
- 
-  std::cout << " in_file_name = " << in_file_name << std::endl;
-  TFile *input_file = new TFile(in_file_name.c_str());
-
-  std::vector<double>* samples = new std::vector<double>;
-  double amplitudeTruth;
-  TTree *tree = (TTree*) input_file->Get("Samples");
-  tree->SetBranchAddress("amplitudeTruth",      &amplitudeTruth);
-  tree->SetBranchAddress("samples",             &samples);
- 
-  int nentries = tree->GetEntries();
- 
-  std::cout << " nentries = " << nentries << std::endl;
-  std::cout << " NSAMPLES = " << NSAMPLES << std::endl;
  
   TFile *output_file;
   TH1D *h01;
@@ -297,16 +307,16 @@ int main(int argc, char** argv) {
   }
   std::cout << " NFREQ = " << NFREQ << std::endl;
  
-  //---- waveform file
-  std::string wf_name = "CRRC43";
-  if (argc>=6) {
-    wf_name = (std::string) argv[5];
-  }
-  std::cout << " wf_name = " << wf_name << std::endl;
+//  //---- waveform file
+//  std::string wf_name = "CRRC43";
+//  if (argc>=6) {
+//    wf_name = (std::string) argv[5];
+//  }
+//  std::cout << " wf_name = " << wf_name << std::endl;
  
  
  
-  run(in_file_name, out_file_name, NSAMPLES, NFREQ, wf_name);
+  run(in_file_name, out_file_name); //wf_name);
  
   std::cout << " out_file_name = " << out_file_name << std::endl;
  
