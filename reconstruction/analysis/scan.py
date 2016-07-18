@@ -14,7 +14,7 @@ def main(files, outfile_name="results.csv", in_time_bx=4):
     # Logging information headers used for writing to output file
     param_names = ["nEvents", "pulse_shift", "pileup_shift", "nSmpl", "nFreq",
                    "amplitudeTruth", "nPU", "sigmaNoise", "puFactor",
-                   "pulse_tau", "wf_name", "in_time_bx"]
+                   "pulse_tau", "WFNAME", "in_time_bx"]
     reco_stat_names  = ["avg_reco_amplitude", "sigma_eff", "sigma_eff_err"]
     outputwriter.writerow(param_names + reco_stat_names)
 
@@ -33,7 +33,7 @@ def main(files, outfile_name="results.csv", in_time_bx=4):
         params = [nEvents, tree.pulse_shift, tree.pileup_shift,
                   tree.nSmpl, tree.nFreq, tree.amplitudeTruth,
                   tree.nPU, tree.sigmaNoise, tree.puFactor,
-                  tree.pulse_tau, tree.wf_name, in_time_bx]
+                  tree.pulse_tau, tree.WFNAME, in_time_bx]
 
         for name, value in zip(param_names, params):
           print '{0:>17}: {1:>5}'.format(name, value)

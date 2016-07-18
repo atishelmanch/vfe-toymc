@@ -45,8 +45,8 @@ if __name__ == '__main__':
     old_input_files = set()
     input_files = set()
     already_fit_files = 0
-    wfs = ["CRRC10", "CRRC20", "CRRC30", "CRRC43", "CRRC60", "CRRC90",
-           "QIE25", "QIE12", "QIE6"]
+    wfs = ["CRRC60","CRRC90"]#CRRC90"CRRC10", "CRRC20", "CRRC30", "CRRC43", "CRRC60", "CRRC90",
+           #"QIE25", "QIE12", "QIE6"]
     while True:
       old_input_files = input_files
       input_files = set(os.listdir('input'))

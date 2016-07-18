@@ -30,21 +30,21 @@ if __name__ == '__main__':  #I believe this executes program only when directly 
     PULSE_SHIFT = 0
     PULSE_SHIFTS = []
     NOISE = 0.0
-    NOISES = [0, 0.1]
+    NOISES = [0,0.044]
     NPU = 0
-    NPUS = [0, 200]
+    NPUS = [0]
     NPUS = []  #extra line?
 
     # We only use combinations of NSAMPLE and NFREQ that give a total sampling
     # period of 250 ns.
-    NSAMPLE_NFREQ = [ (10, 25), (40, 6.25) ] #In nanoseconds I think
+    NSAMPLE_NFREQ = [ (10, 25)] #In nanoseconds I think
 
     # "CRRCXX" refers to a CR-RC pulse with time constant tau = XX.
     # CRRC pulse shaping is compatible with all sampling rates.
-    CRRC_WF_NAMES = ["CRRC10", "CRRC90"]
+    CRRC_WF_NAMES = ["CRRC60", "CRRC90"]
     WF_NFREQ_DICT = {wf : NSAMPLE_NFREQ for wf in CRRC_WF_NAMES}
 
-    QIE_WF_NAMES = ["QIE25"]
+    QIE_WF_NAMES = []#["QIE25"]
     WF_NFREQ_DICT.update(
         {wf : [NSAMPLE_NFREQ[i]] for i, wf in enumerate(QIE_WF_NAMES)})
 

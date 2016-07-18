@@ -21,7 +21,7 @@
 
 int main(int argc, char** argv) {      //argc is argument count, argv is argument vector
 
-  TRandom rnd;    //declaring of Trandom class
+  TRandom rnd;    //declaring of Trandom class called rnd
 
   // Default variables
   // time shift in ns of pulse
@@ -78,8 +78,8 @@ int main(int argc, char** argv) {      //argc is argument count, argv is argumen
   std::cout << " NSAMPLES = " << NSAMPLES << std::endl;
   std::cout << " NFREQ = " << NFREQ << std::endl;
   std::cout << " nPU = " << nPU << std::endl;
-  std::cout << " signalAmplitude = " << signalAmplitude << std::endl;
-  std::cout << " Generation of digitized samples " << std::endl;
+  std::cout << " signalAmplitude = " << signalAmplitude << std::endl; 
+  std::cout << " Generation of digitized samples " << std::endl; //not sure what this is
   std::cout << " WFLENGTH = " << WFLENGTH << std::endl;
   std::cout << " nEventsTotal = " << nEventsTotal << std::endl;
  
