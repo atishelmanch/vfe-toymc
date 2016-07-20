@@ -11,7 +11,7 @@ import sys #imports sys module, used here for sys.argv
 
 if __name__ == '__main__':  #I believe this executes program only when directly run, not when called in another file.
     # number of events to simulate for each configuration
-    NTOYS = 100
+    NTOYS = 1000
 
     # Currently we use 10 GeV events and no scale factor for pileup.
     AMPLITUDE = 10.0
@@ -25,13 +25,13 @@ if __name__ == '__main__':  #I believe this executes program only when directly 
     # More combinations of parameters can be used by altering the loop
     # structure below.
     PILEUP_SHIFT = 0 #Single value while varying other parameters
-    PILEUP_SHIFTS = [0, 0.5, 1, 5]  
+    PILEUP_SHIFTS = []  
     PULSE_SHIFT = 0
     PULSE_SHIFTS = []
     NOISE = 0.0
     NOISES = [0,0.01,0.02,0.05,0.1]
     NPU = 0
-    NPUS = [0, 20, 40, 100, 200]
+    NPUS = []
 
     # We only use combinations of NSAMPLE and NFREQ that give a total sampling
     # period of 250 ns.

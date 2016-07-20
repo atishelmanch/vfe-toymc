@@ -17,17 +17,18 @@
 
 
 void run(
-    std::string in_file_name, std::string out_file_name){
+    std::string in_file_name, std::string out_file_name, std::string wf_name, bool chose_wf_name){
  
   std::cout << " run ..." << std::endl;
  
   std::cout << " in_file_name = " << in_file_name << std::endl;
   TFile *input_file = new TFile(in_file_name.c_str());
 
-  
+  std::cout << " wf_name = " << wf_name << std::endl;  
+
   int NSAMPLES;
   float NFREQ;
-  std::string *wf_name = new std::string;
+  //int nentries;
   
   std::vector<double>* samples = new std::vector<double>;
   double amplitudeTruth;
@@ -36,16 +37,34 @@ void run(
   tree->SetBranchAddress("samples",             &samples);
   tree->SetBranchAddress("nSmpl",             &NSAMPLES);
   tree->SetBranchAddress("nFreq",             &NFREQ);
-  tree->SetBranchAddress("WFNAME",             &wf_name);
+  //tree->SetBranchAddress("WFNAME",             &wf_name);
  
   int nentries = tree->GetEntries();
-  tree->GetEntry(0);
+  //tree->GetEntry(0);
  
+  //std::string *wf_name_final;
+  std::string *wf_name_final = new std::string;
+  if (chose_wf_name) {
+      wf_name_final = &wf_name;
+      std::cout << "Manual wf_name chosen, wf_name = " << *wf_name_final <<  std::endl;
+      //int nentries = tree->GetEntries();
+      tree->GetEntry(0);
+    }
+  else {
+    //wf_name_final = new std::string;
+    tree->SetBranchAddress("WFNAME",             &wf_name_final);
+    
+    //int nentries = tree->GetEntries();
+    tree->GetEntry(0);
+    
+    std::cout << "wf_name taken from file, wf_name = " << (std::string) *wf_name_final <<  std::endl;
+    }
+
   std::cout << " nentries = " << nentries << std::endl;
   std::cout << " NSAMPLES = " << NSAMPLES << std::endl;
   std::cout << " amplitudeTruth = " << amplitudeTruth << std::endl;
   std::cout << " Test line. You've made it to this point." << std::endl;
-  std::cout << " wf_name = " << wf_name << std::endl;
+  std::cout << " wf_name = " << wf_name_final << std::endl;
   std::cout << " You've made it past wf_name " << std::endl;
   int IDSTART = 7*25;
  
@@ -67,7 +86,7 @@ void run(
  
   std::string wf_file_name = (
       ((std::string) "data/EmptyFile") +
-      ((std::string) *wf_name) + 
+      ((std::string) *wf_name_final) + 
       ((std::string) ".root"));
   std::cout << wf_file_name << std::endl;
 
@@ -293,30 +312,32 @@ int main(int argc, char** argv) {
   }
   std::cout << " out_file_name = " << out_file_name << std::endl;
  
-  //---- number of samples per impulse
-  int NSAMPLES = 10;
+ // //---- number of samples per impulse
+ // int NSAMPLES = 10;
+ // if (argc>=4) {
+ //   NSAMPLES = atoi(argv[3]);
+ // }
+ // std::cout << " NSAMPLES = " << NSAMPLES << std::endl;
+ 
+ // //---- number of samples per impulse
+ // float NFREQ = 25;
+ // if (argc>=5) {
+ //   NFREQ = atof(argv[4]);
+ // }
+ // std::cout << " NFREQ = " << NFREQ << std::endl;
+ 
+  //---- waveform file
+  bool chose_wf_name = false;
+  std::string wf_name = "Currently No wf_name.";
   if (argc>=4) {
-    NSAMPLES = atoi(argv[3]);
+    chose_wf_name = true;
+    wf_name = (std::string) argv[3];
   }
-  std::cout << " NSAMPLES = " << NSAMPLES << std::endl;
- 
-  //---- number of samples per impulse
-  float NFREQ = 25;
-  if (argc>=5) {
-    NFREQ = atof(argv[4]);
-  }
-  std::cout << " NFREQ = " << NFREQ << std::endl;
- 
-//  //---- waveform file
-//  std::string wf_name = "CRRC43";
-//  if (argc>=6) {
-//    wf_name = (std::string) argv[5];
-//  }
-//  std::cout << " wf_name = " << wf_name << std::endl;
+  std::cout << " wf_name = " << wf_name << std::endl;
  
  
  
-  run(in_file_name, out_file_name); //wf_name);
+  run(in_file_name, out_file_name, wf_name, chose_wf_name);
  
   std::cout << " out_file_name = " << out_file_name << std::endl;
  
@@ -324,4 +345,3 @@ int main(int argc, char** argv) {
 }
 
 # endif
-

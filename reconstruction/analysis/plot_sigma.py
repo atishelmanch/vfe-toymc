@@ -2,7 +2,7 @@ import collections
 from copy import deepcopy
 import csv
 from ROOT import *
-
+import sys
 
 def get_data(csv_input, value_names, inner_keys, ignore_keys):
   reader = csv.DictReader(csv_input)
@@ -30,11 +30,11 @@ def make_graph_line(data):
 def make_multigraph(data, out_root_file=None, graph_name="gr",
                     title="", x_axis_title="",
                     save_canvas_as=""):
-
-  lines = [(10.0, 25.0), (40., 6.25)]
+  
+  lines = [(10, 25), (20, 12.5), (40, 6.25)]
 
   g_lines = []
-
+  
   for line_idx, line_val in enumerate(lines):
       try:
         graph_line = make_graph_line(data[line_val])
@@ -50,9 +50,7 @@ def make_multigraph(data, out_root_file=None, graph_name="gr",
 
       if out_root_file:
         graph_line.Write()
-
       g_lines.append([graph_line, "NSAMPLE=%d NFREQ=%.2f" % line_val])
-
 
   # The canvas to be used 
   canvas = TCanvas("title", "name", 1200, 1000)
@@ -87,6 +85,7 @@ def main(infile_name="results.csv", outfile_name="plot_sigma.root", save_canvas_
   for outer_key, inner_data in d.iteritems():
     print outer_key
     make_multigraph(inner_data, outrootfile, outer_key)
+  #print "1%s2" % save_canvas_as
   outrootfile.Close()
 
 
