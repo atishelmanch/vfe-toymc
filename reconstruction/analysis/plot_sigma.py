@@ -25,7 +25,6 @@ def make_graph_line(data):
     graph_line.SetPointError(i, 0, y_err)
   return graph_line
 
-
 # data[(Nsample, Nfreq)] = [(x, y, y_err), (x, y, y_err), ...]
 def make_multigraph(data, out_root_file=None, graph_name="gr",
                     title="", x_axis_title="",
@@ -71,7 +70,10 @@ def make_multigraph(data, out_root_file=None, graph_name="gr",
   #graph.GetXaxis().SetTitle(x_axis_title)
   legend.Draw()
   if out_root_file:
-    graph.Write()
+    graph.Write()  
+    
+  print save_canvas_as
+  #sys.exit("Manual Exit.")
   if save_canvas_as:
     canvas.SaveAs(save_canvas_as)
 

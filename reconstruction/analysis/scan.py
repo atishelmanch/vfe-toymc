@@ -86,7 +86,7 @@ def mean_sigma_eff(amp_list):
                 window_size = last_end_value - last_start_value
                 break    
         #if not found_window:
-        #    # No window was found so we can drop out of the outer loop
+        #    # No window was found so we can drop out of the outer loop (wrong. Better window may still be found at other starting indicies)
         #   break
 
     print "Window size of %f, between (%f, %f)." % (
