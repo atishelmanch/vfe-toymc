@@ -255,7 +255,42 @@ void plotPulse (std::string nameInputFile = "output.root", std::string nsample, 
  png_name = nameWF + "_" + nsample + "_" + nfreq + "_NewPulseRecoAll.png";
  png_name_cst = png_name.c_str();
  ccNewPulseAndReco->SaveAs(png_name_cst);
- 
+
+
+ TCanvas* ccNewReco = new TCanvas ("ccNewReco","",800,600);
+ TGraph *grNewReco = new TGraph();
+ for(int i=0; i<samples->size(); i++){
+  grNewReco->SetPoint(i, i * NFREQ, samples->at(i)-totalRecoSpectrum[i]); //samples->at(i)-grNewPulseRecoAll[i]
+ }
+ grNewReco->SetMarkerSize(2);
+ grNewReco->SetMarkerStyle(22);
+ grNewReco->SetMarkerColor(kBlue);
+ grNewReco->Draw("ALP");
+ grNewReco->GetXaxis()->SetTitle("Nanoseconds");
+ grNewReco->SetTitle("New Reconstructed");
+ new_png_name = "New" + nameWF + "_" + nsample + "_" + nfreq + "_reconstructed.png";
+ new_png_name_cst = new_png_name.c_str();
+ new_graph_title = "New Reconstructed";
+ new_graph_title_cst = new_graph_title.c_str();
+ ccNewReco->SaveAs(new_png_name_cst);
+
+ TCanvas* ccRecoDifference = new TCanvas ("ccRecoDifference","",800,600);
+ TGraph *grRecoDifference = new TGraph();
+ for(int i=0; i<samples->size(); i++){
+  grRecoDifference->SetPoint(i, i * NFREQ, samplesReco->at(i) - samples->at(i)+totalRecoSpectrum[i]));
+}
+ grRecoDifference->SetMarkerSize(2);
+ grRecoDifference->SetMarkerStyle(22);
+ grRecoDifference->SetMarkerColor(kBlue);
+ grRecoDifference->Draw("ALP");
+ grRecoDifference->GetXaxis()->SetTitle("Nanoseconds");
+ grRecoDifference->SetTitle("Old Reco - New reco");
+ //new_png_name2 ="RecoDifference.png";
+ //new_png_name2_cst = new_png_name2.c_str();
+ //new_graph_title2 = "RecoDifference";
+ //new_graph_title2_cst = new_graph_title2.c_str();
+ //ccRecoDifference->SaveAs(new_png_name2_cst);
+
 }
 
 
