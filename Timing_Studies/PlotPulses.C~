@@ -1,0 +1,392 @@
+//---- plot output of multifit
+
+using namespace std;
+
+void PlotPulses (string nameInputFile = "output.root", string nsample, string nfreq, string nameWF, string ps, int nEvent = 0){ // Input File and variable declarations 
+ 
+ //Marker colors and shapes
+ Color_t* color = new Color_t [200];
+ color[0] = kAzure; //kRed ;
+ color[1] = kAzure + 10 ;
+ color[2] = kYellow + 2 ;
+ color[3] = kGreen ;
+ color[4] = kGreen + 4 ;
+ color[5] = kBlue ;
+ color[6] = kCyan ;
+ color[7] = kPink + 1 ;
+ color[8] = kBlack ;
+ color[9] = kYellow + 4 ;
+
+ //30 more colors
+ for (int i=0; i<30; i++) { 
+  color[i+10] = kBlue + i;
+ }
+ 
+ //String of manually entered input file name
+ TFile *file = new TFile(nameInputFile.c_str()); 
+ 
+ //Select tree to access branches from
+ TTree* tree = (TTree*) file->Get("RecoAndSim");
+ 
+ //Creating pointers for branch information
+ int    nWF;
+ vector<double>* pulse_signal        = new vector<double>;
+ vector<double>* samplesReco         = new vector<double>;
+ vector<double>* samples             = new vector<double>;
+ vector<int>*    activeBXs           = new vector<int>;
+ float  NFREQ;
+ vector<double>* pulseShapeTemplate  = new vector<double>;  
+ double chiSquare;
+ double amplitudeTruth;
+ float  pulse_shift;
+ 
+ //Obtaining Branch information
+ tree->SetBranchAddress("nWF",                &nWF); //Total number of time entries (x values) for raw waveform
+ tree->SetBranchAddress("pulse_signal",       &pulse_signal); //Gives waveform y values
+ tree->SetBranchAddress("samplesReco",        &samplesReco); //Incident particle(s?) energy guess
+ tree->SetBranchAddress("samples",            &samples); //Raw sample data, samples of waveform every nFreq seconds
+ tree->SetBranchAddress("activeBXs",          &activeBXs); //Bunch crossings by number (for ex -4, -3, ..., 5)
+ tree->SetBranchAddress("nFreq",              &NFREQ); //Sample time
+ tree->SetBranchAddress("pulseShapeTemplate", &pulseShapeTemplate); //Roughly explained as 'mfit guess of how waveform looks'
+ tree->SetBranchAddress("chiSquare",          &chiSquare); //Chi squared of.. 
+ tree->SetBranchAddress("amplitudeTruth",     &amplitudeTruth); //True amplitude of event
+ tree->SetBranchAddress("pulse_shift",        &pulse_shift); 
+
+ //std::ostringstream ss;
+ //ss << pulse_shift;
+ //std::string pulse_string(ss.str());
+
+ //std::string s = boost::lexical_cast<std::string>(pulse_shift);
+
+ tree->GetEntry(nEvent); //Choosing event number for branches
+
+ //Checking values from branches
+ cout << " nWF = " << nWF << endl;
+ cout << " NFREQ = " << NFREQ << endl;
+ cout << " chiSquare = " << chiSquare << endl;
+ cout << " amplitudeTruth = " << amplitudeTruth << endl;
+ cout << " pulse_shift = " << pulse_shift << endl;
+
+ //Plotting the unsampled (raw) waveform
+ TCanvas* ccwaveform = new TCanvas ("ccwaveform","1",800,600); //Name, Title, width and height
+ TGraph *gr = new TGraph();
+ for(int i=0; i<nWF; i++){ //nWF is time for entire waveform
+  gr->SetPoint(i, i, pulse_signal->at(i)); //Create Data Points: (point i, x value, y value)
+ }
+ gr->Draw("AL"); //A=Axis, L=Line graph
+ string graph_title = nameWF + " Waveform";
+ char * graph_title_cst = graph_title.c_str(); //c_str() returns pointer, roughly meant to make data accessible 
+ gr->SetTitle(graph_title_cst); 
+ gr->SetLineColor(kMagenta);
+ gr->SetLineWidth(2);
+ gr->GetXaxis()->SetTitle("time [ns]");
+ string png_name = "images/plotPulse/" + nameWF + "_raw.png";
+ char * png_name_cst = png_name.c_str();
+ ccwaveform->SaveAs(png_name_cst);
+ 
+ //Plotting energy reconstruction
+ TCanvas* ccReco = new TCanvas ("ccReco","2",800,600);
+ TGraph *grReco = new TGraph();
+ for(int i=0; i<samplesReco->size(); i++){
+  cout << " i, activeBXs->at(i), samplesReco->at(i) = " << i << "::" << samplesReco->size() << " -> " << activeBXs->at(i) << " , " << samplesReco->at(i) << endl;
+  grReco->SetPoint(i, activeBXs->at(i), samplesReco->at(i)); 
+ }
+ grReco->SetMarkerSize(2);
+ grReco->SetMarkerStyle(22);
+ grReco->SetMarkerColor(kBlue);
+ grReco->Draw("ALP"); //P: Marker plotted at each point
+ grReco->GetXaxis()->SetTitle("BX");
+ png_name = "images/plotPulse/" + ps + "_" + nsample + "_" + nfreq + "_reconstructed.png";
+ png_name_cst = png_name.c_str();
+ graph_title = "Reconstructed " + nameWF + " Pulse: " + nsample + " samples, " + nfreq + "ns period";
+ graph_title_cst = graph_title.c_str();
+ grReco->SetTitle(graph_title_cst);
+ ccReco->SaveAs(png_name_cst);
+ 
+ //Plotting digitized waveform
+ TCanvas* ccPulse = new TCanvas ("ccPulse","3",800,600);
+ TGraph *grPulse = new TGraph();
+ for(int i=0; i<samples->size(); i++){
+  grPulse->SetPoint(i, i * NFREQ , samples->at(i));
+ }
+ grPulse->SetMarkerSize(2);
+ grPulse->SetMarkerStyle(21);
+ grPulse->SetMarkerColor(kRed);
+ //Draws samples
+ grPulse->Draw("ALP"); // Draw Axis, make Line plot, plot markers at Points	
+ grPulse->GetXaxis()->SetTitle("time [ns]");
+ png_name = "images/plotPulse/" + nameWF + "_" + nsample + "_" + nfreq + "_digitized.png";
+ png_name_cst = png_name.c_str();
+ graph_title = "Digitized " + nameWF + " Waveform: " + nsample + " samples, " + nfreq + "ns period";
+ graph_title_cst = graph_title.c_str();
+ grPulse->SetTitle(graph_title_cst);
+ ccPulse->SaveAs(png_name_cst);
+ 
+ cout << " end " << endl;
+
+ //Plotting Digitized In and Out of Time BX with separately digitized in time pulse
+ TCanvas* ccPulseAndReco = new TCanvas ("ccPulseAndReco","4",800,600);
+ TGraph *grPulseRecoAll = new TGraph();
+ TGraph *grPulseReco[100];  //More than enough space
+ std::cout << " samplesReco->size() = " << samplesReco->size() << std::endl;
+ std::cout << " activeBXs->size() = " << activeBXs->size() << std::endl;
+ std::cout << " pulseShapeTemplate->size() = " << pulseShapeTemplate->size() << std::endl;
+ std::cout << " samples->size() = " << samples->size() << std::endl;
+ 
+ //TLegend* leg = new TLegend(0.7,0.2,0.9,0.9);
+ TLegend* leg = new TLegend(0.9,0.2,1.0,0.9); //(x1,y1,x2,y2)
+ TPaveText* box = new TPaveText(0.9,0.9,1.0,1.0, "NDC");
+ 
+ //Initializing totalRecoSpectrum for upcoming loop
+ float totalRecoSpectrum[100];
+ for(int i=0; i<samples->size(); i++){ 
+  totalRecoSpectrum[i]=0;
+ }
+ 
+ 
+ //for(int iBx=0; iBx<3; iBx++)
+
+ //Defining grPulseReco, totalRecoSpectrum, corresponding to individual BX plots, and total BX plot.
+ for(int iBx=0; iBx<samplesReco->size(); iBx++){ //iBx is selected bunch crossing [0,...]->[-4/-8/-16,-3/-6/-12,...]
+  std::cout << " iBx = " << iBx << std::endl;
+  grPulseReco[iBx] = new TGraph(); //Creating plot for each bunch crossing
+  for(int i=0; i<samples->size(); i++){
+   std::cout << "  >> i = " << i << std::endl;
+   grPulseReco[iBx]->SetPoint(i, i * NFREQ + activeBXs->at(iBx)*NFREQ + 2 * 25, pulseShapeTemplate->at(i) * samplesReco->at(iBx));
+  
+   int iReco = (i * NFREQ + activeBXs->at(iBx)*NFREQ + 2 * 25) / NFREQ;
+   if ( iReco >= 0 && iReco <samples->size() ) {
+    totalRecoSpectrum[iReco] += pulseShapeTemplate->at(i) * samplesReco->at(iBx); //If both conditions true: TRC[]=TRC[]+PST[]*SampReco[], loops over i's (samples) for each iBx (bunch crossing)
+   } 
+   
+  }
+  //Settup up BX graphs
+  grPulseReco[iBx]->SetMarkerColor(color[iBx]);
+  grPulseReco[iBx]->SetLineColor(color[iBx]);
+  grPulseReco[iBx]->SetMarkerSize(1);
+  grPulseReco[iBx]->SetMarkerStyle(21+iBx);
+  TString nameHistoTitle = Form ("BX %d", activeBXs->at(iBx));
+  leg->AddEntry(grPulseReco[iBx],nameHistoTitle.Data(),"p"); // adding BX #'s to legend
+ }
+ 
+ //Draw digitized waveform (in time BX)
+ grPulse->Draw("ALP");  
+
+ //Draw digitized waveforms (out of time BX's besides iBx=0)
+ for(int iBx=1; iBx<samplesReco->size(); iBx++){
+  grPulseReco[iBx]->Draw("PL");
+ }
+ 
+ for(int i=0; i<samples->size(); i++){
+  grPulseRecoAll->SetPoint(i, i * NFREQ, totalRecoSpectrum[i]);
+ }
+ 
+ TString chiSquareString = Form ("#chi^{2} = %f", chiSquare); //using %f for double. Is this ok or a bug?
+ box->AddText(chiSquareString.Data()); //Chi squared box (top right)
+ 
+ //Setting up plotting of sum of BX signals
+ grPulseRecoAll->SetMarkerColor(kMagenta);
+ grPulseRecoAll->SetLineColor(kMagenta);
+ grPulseRecoAll->SetLineStyle(1);
+ grPulseRecoAll->SetMarkerSize(2);
+ grPulseRecoAll->SetMarkerStyle(24);
+ grPulseRecoAll->Draw("PL"); //Draws sum Bx plot
+ leg->AddEntry(grPulseRecoAll,"BX Sum","p");
+ grPulse->GetXaxis()->SetTitle("time [ns]");
+  
+
+ box->Draw(); //Drawing legend box
+ 
+ leg->Draw();
+
+ png_name = "images/plotPulse/" + nameWF + "_" + nsample + "_" + nfreq + "_PulseRecoAll.png";
+ png_name_cst = png_name.c_str();
+ ccPulseAndReco->SaveAs(png_name_cst);
+ 
+ 
+// --------------------------------------------------------
+// Attempting to  extract in time pulse 
+// not as E_i*f(time) but as 
+// data-sum(all bunch crossings except intime)E_{j}*f(i-j)
+// --------------------------------------------------------
+
+ //Plotting Digitized Out of Time BX with separately digitized in time
+ TCanvas* ccNewPulseAndReco = new TCanvas ("ccNewPulseAndReco","5",800,600);
+ TGraph *grNewPulseRecoAll = new TGraph();
+ TGraph *grNewPulseReco[100];  // more than enough space
+ std::cout << " samplesReco->size() = " << samplesReco->size() << std::endl;
+ std::cout << " activeBXs->size() = " << activeBXs->size() << std::endl;
+ std::cout << " pulseShapeTemplate->size() = " << pulseShapeTemplate->size() << std::endl;
+ std::cout << " samples->size() = " << samples->size() << std::endl;
+ 
+ //TLegend* leg = new TLegend(0.7,0.2,0.9,0.9);
+ TLegend* leg = new TLegend(0.9,0.2,1.0,0.9);
+ TPaveText* box = new TPaveText(0.9,0.9,1.0,1.0, "NDC");
+ 
+ float NewtotalRecoSpectrum[100];
+ for(int i=0; i<samples->size(); i++){
+  NewtotalRecoSpectrum[i]=0;
+ }
+ 
+ 
+//  for(int iBx=0; iBx<3; iBx++)
+ for(int iBx=0; iBx<samplesReco->size(); iBx++){ 
+  std::cout << " iBx = " << iBx << std::endl;
+  if (iBx==4) { //excluding in time bunch cross
+  continue;
+  }
+  grNewPulseReco[iBx] = new TGraph();
+  for(int i=0; i<samples->size(); i++){
+   std::cout << "  >> i = " << i << std::endl;
+   grNewPulseReco[iBx]->SetPoint(i, i * NFREQ + activeBXs->at(iBx)*NFREQ + 2 * 25, pulseShapeTemplate->at(i) * samplesReco->at(iBx));
+  
+   int iReco = (i * NFREQ + activeBXs->at(iBx)*NFREQ + 2 * 25) / NFREQ;
+   if ( iReco >= 0 && iReco <samples->size() ) {
+    NewtotalRecoSpectrum[iReco] += pulseShapeTemplate->at(i) * samplesReco->at(iBx); //Should pulseShapeTemplate be ->at(i-something)?
+   } 
+ for (int i=0; i<20; i++){
+ std::cout << " NewtotalRecoSpectrum[" << i <<"] = " << NewtotalRecoSpectrum[i] << std::endl;
+ }   
+ //exit(); //exit
+  }
+  grNewPulseReco[iBx]->SetMarkerColor(color[iBx]);
+  grNewPulseReco[iBx]->SetLineColor(color[iBx]);
+  grNewPulseReco[iBx]->SetMarkerSize(1);
+  grNewPulseReco[iBx]->SetMarkerStyle(21+iBx);
+  TString nameHistoTitle = Form ("BX %d", activeBXs->at(iBx));
+  leg->AddEntry(grNewPulseReco[iBx],nameHistoTitle.Data(),"p");
+ }
+ 
+ grPulse->Draw("ALP");
+ 
+ for(int iBx=1; iBx<samplesReco->size(); iBx++){
+  if (iBx==4) {
+  continue;
+  }
+   grNewPulseReco[iBx]->Draw("PL");
+ }
+ 
+ //NewPulseRecoAll does NOT include iBx=4 (in time BX)
+ for(int i=0; i<samples->size(); i++){
+  grNewPulseRecoAll->SetPoint(i, i * NFREQ, NewtotalRecoSpectrum[i]);
+ }
+  
+ TString chiSquareString = Form ("#chi^{2} = %f", chiSquare);
+ box->AddText(chiSquareString.Data());
+ 
+ grNewPulseRecoAll->SetMarkerColor(kMagenta);
+ grNewPulseRecoAll->SetLineColor(kMagenta);
+ grNewPulseRecoAll->SetLineStyle(1);
+ grNewPulseRecoAll->SetMarkerSize(2);
+ grNewPulseRecoAll->SetMarkerStyle(24);
+ grNewPulseRecoAll->Draw("PL");
+ grPulse->GetXaxis()->SetTitle("time [ns]");
+ leg->AddEntry(grNewPulseRecoAll,"BX Sum","p");
+ 
+ box->Draw();
+ 
+ leg->Draw();
+
+ png_name = "images/plotPulse/" + nameWF + "_" + nsample + "_" + nfreq + "_PulseRecoAllExceptInTime.png";
+ png_name_cst = png_name.c_str();
+ ccNewPulseAndReco->SaveAs(png_name_cst);
+
+ //Plotting Digitized in time pulse as "data-sum(all BX except in time)E_j*f(i-j)" rather than "E_i*f(intime)" <-Black box graph in plot 4
+ TCanvas* ccNewReco = new TCanvas ("ccNewReco","6",800,600);
+ TGraph *grNewReco = new TGraph();
+ for(int i=0; i<samples->size(); i++){
+  grNewReco->SetPoint(i, i * NFREQ, samples->at(i)-NewtotalRecoSpectrum[i]); //samples->at(i)-grNewPulseRecoAll[i]
+ }
+ grNewReco->SetMarkerSize(2);
+ grNewReco->SetMarkerStyle(22);
+ grNewReco->SetMarkerColor(kBlue);
+ grNewReco->Draw("ALP");
+ grNewReco->GetXaxis()->SetTitle("time [ns]");
+ png_name = "images/plotPulse/New_" + nameWF + "_" + nsample + "_" + nfreq + "_digitized.png";
+ png_name_cst = png_name.c_str();
+ graph_title = "New Digitized";
+ graph_title_cst = graph_title.c_str();
+ grNewReco->SetTitle(graph_title_cst);
+ ccNewReco->SaveAs(png_name_cst);
+
+
+ //Plotting in time digitized pulse (from BX canvas)
+ TCanvas* ccOldDig = new TCanvas ("ccOldDig","7",800,600);
+ TGraph *grOldDig = new TGraph();
+ std::cout << "Plotting OldDig" << std::endl;
+ for(int i=0; i<samples->size(); i++){
+   std::cout << "  >> i = " << i << std::endl;
+   grOldDig->SetPoint(i, i * NFREQ + activeBXs->at(4)*NFREQ+2*25, pulseShapeTemplate->at(i) * samplesReco->at(4));
+  }
+ grOldDig->SetMarkerColor(color[4]);
+ grOldDig->SetLineColor(color[4]);
+ grOldDig->SetMarkerSize(1);
+ grOldDig->SetMarkerStyle(25);
+ grOldDig->Draw("ALP"); // Draw Axis, make Line plot, plot markers at Points	
+ grOldDig->GetXaxis()->SetTitle("time [ns]");
+ png_name = "images/plotPulse/Old_" + nameWF + "_" + nsample + "_" + nfreq + "_digitized.png";
+ png_name_cst = png_name.c_str();
+ graph_title = "Old Digitized " + nameWF + " Waveform: " + nsample + " samples, " + nfreq + "ns period";
+ graph_title_cst = graph_title.c_str();
+ grOldDig->SetTitle(graph_title_cst);
+ ccOldDig->SaveAs(png_name_cst);
+
+ //Plotting difference of pulse extraction methods
+ TCanvas* ccDigiDifference = new TCanvas ("ccDigiDifference","8",800,600);
+ TGraph *grDigiDifference = new TGraph();
+ for(int i=0; i<6; i++){
+  grDigiDifference->SetPoint(i, i * NFREQ + 25 * 2, pulseShapeTemplate->at(i) * samplesReco->at(4) - ( samples->at(i+2) - NewtotalRecoSpectrum[i+2]));
+}
+ grDigiDifference->SetMarkerSize(2);
+ grDigiDifference->SetMarkerStyle(22);
+ grDigiDifference->SetMarkerColor(kBlue);
+ grDigiDifference->Draw("ALP");
+ grDigiDifference->GetXaxis()->SetTitle("time [ns]");
+ png_name ="images/plotPulse/DigiDifference.png";
+ png_name_cst = png_name.c_str();
+ graph_title = "Old Digitization - New Digitization";
+ graph_title_cst = graph_title.c_str();
+ grDigiDifference->SetTitle(graph_title_cst);
+ ccDigiDifference->SaveAs(png_name_cst);
+
+//Plotting 'true' pulse (not sure what to call it..?)
+ TCanvas* ccTruePulse = new TCanvas ("ccTruePulse","9",800,600);
+ TGraph *grTruePulse = new TGraph();
+ 
+ std::cout << " pulse_shift = " << pulse_shift << std::endl;
+ exit(); //exit
+
+ for(int i=0; i<samples->size(); i++){
+   grTruePulse->SetPoint(i, i * NFREQ , amplitudeTruth * pulseShapeTemplate->at(i-pulse_shift)); //need pulseShapeTemplate at i-pulse_shift..might need to see from results if this is right
+ }
+ grTruePulse->SetMarkerSize(2);
+ grTruePulse->SetMarkerStyle(22);
+ grTruePulse->SetMarkerColor(kBlue);
+ grTruePulse->Draw("ALP");
+ grTruePulse->GetXaxis()->SetTitle("time [ns]");
+ png_name ="images/plotPulse/TruePulse.png";
+ png_name_cst = png_name.c_str();
+ graph_title = "TruePulse";
+ graph_title_cst = graph_title.c_str();
+ grTruePulse->SetTitle(graph_title_cst);
+ ccTruePulse->SaveAs(png_name_cst);
+
+ TCanvas* ccOldminTrue = new TCanvas ("ccOldminTrue","10",800,600);
+ TGraph *grOldminTrue = new TGraph();
+ for(int i=0; i<6; i++){
+   grOldminTrue->SetPoint(i, i * NFREQ + activeBXs->at(4)*NFREQ+2*25, pulseShapeTemplate->at(i) * samplesReco->at(4) - ( amplitudeTruth * pulseShapeTemplate->at(i-pulse_shift) ) );
+ }
+ grOldminTrue->SetMarkerSize(2);
+ grOldminTrue->SetMarkerStyle(22);
+ grOldminTrue->SetMarkerColor(kBlue);
+ grOldminTrue->Draw("ALP");
+ grOldminTrue->GetXaxis()->SetTitle("time [ns]");
+ png_name ="images/plotPulse/OldminTrue.png";
+ png_name_cst = png_name.c_str();
+ graph_title = "Old - True";
+ graph_title_cst = graph_title.c_str();
+ grOldminTrue->SetTitle(graph_title_cst);
+ ccOldminTrue->SaveAs(png_name_cst);
+
+}
+
