@@ -115,7 +115,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  //Draws samples
  grPulse->Draw("ALP"); // Draw Axis, make Line plot, plot markers at Points	
  grPulse->GetXaxis()->SetTitle("time [ns]");
- png_name = "images/plotPulse/" + nameWF + "_" + nsample + "_" + nfreq + "_digitized.png";
+ png_name = "images/plotPulse/" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_digitized.png";
  png_name_cst = png_name.c_str();
  graph_title = "Digitized " + nameWF + " Waveform: " + nsample + " samples, " + nfreq + "ns period";
  graph_title_cst = graph_title.c_str();
@@ -199,7 +199,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  
  leg->Draw();
 
- png_name = "images/plotPulse/" + nameWF + "_" + nsample + "_" + nfreq + "_PulseRecoAll.png";
+ png_name = "images/plotPulse/" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_PulseRecoAll.png";
  png_name_cst = png_name.c_str();
  ccPulseAndReco->SaveAs(png_name_cst);
  
@@ -290,7 +290,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  
  leg->Draw();
 
- png_name = "images/plotPulse/" + nameWF + "_" + nsample + "_" + nfreq + "_PulseRecoAllExceptInTime.png";
+ png_name = "images/plotPulse/" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_PulseRecoAllExceptInTime.png";
  png_name_cst = png_name.c_str();
  ccNewPulseAndReco->SaveAs(png_name_cst);
 
@@ -305,7 +305,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  grNewReco->SetMarkerColor(kBlue);
  grNewReco->Draw("ALP");
  grNewReco->GetXaxis()->SetTitle("time [ns]");
- png_name = "images/plotPulse/New_" + nameWF + "_" + nsample + "_" + nfreq + "_digitized.png";
+ png_name = "images/plotPulse/New_" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_digitized.png";
  png_name_cst = png_name.c_str();
  graph_title = "New Digitized";
  graph_title_cst = graph_title.c_str();
@@ -327,7 +327,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  grOldDig->SetMarkerStyle(25);
  grOldDig->Draw("ALP"); // Draw Axis, make Line plot, plot markers at Points	
  grOldDig->GetXaxis()->SetTitle("time [ns]");
- png_name = "images/plotPulse/Old_" + nameWF + "_" + nsample + "_" + nfreq + "_digitized.png";
+ png_name = "images/plotPulse/Old_" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_digitized.png";
  png_name_cst = png_name.c_str();
  graph_title = "Old Digitized " + nameWF + " Waveform: " + nsample + " samples, " + nfreq + "ns period";
  graph_title_cst = graph_title.c_str();
@@ -337,15 +337,15 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  //First setting up parameters based on nsampl/nfreq combo
  //Different samp/freq values means different number of Digitization points in common between two methods (points) and different offset (skip)
  cout << "nsample = " << nsample << endl;
- if (nsample="10"){
+ if (nsample=="10"){
  int skip = 2;
  int points = 8;
  }
- else if (nsample="20"){
+ else if (nsample=="20"){
  int skip = 4;
  int points = 16;
  }
- else if (nsample="40"){
+ else if (nsample=="40"){
  int skip = 8;
  int points = 32;
  }
@@ -366,7 +366,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  grDigiDifference->SetMarkerColor(kBlue);
  grDigiDifference->Draw("ALP");
  grDigiDifference->GetXaxis()->SetTitle("time [ns]");
- png_name ="images/plotPulse/DigiDifference.png";
+ png_name ="images/plotPulse/" + ps + "_" DigiDifference.png";
  png_name_cst = png_name.c_str();
  graph_title = "Old Digitization - New Digitization";
  graph_title_cst = graph_title.c_str();

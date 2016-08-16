@@ -17,14 +17,16 @@ def scan(files): #, outfile_name="RootScan.csv"): #args becomes files
     #outputwriter = csv.writer(outputfile)
 
     # Logging information headers used for writing to output file
+    
+    #for a in range(7): #Want to loop for each pulse_shift value 
     param_names = ["nEvents", "pulse_shift", "pileup_shift", "nSmpl", "nFreq",
                    "amplitudeTruth", "nPU", "sigmaNoise", "puFactor",
                    "pulse_tau", "WFNAME"]
-    DigiDifference_parameters  = ["DigiDifference_x", "DigiDifference_y"]
+    #DigiDifference_parameters  = ["DigiDifference_x", "DigiDifference_y"]
     #outputwriter.writerow(param_names + DigiDifference_parameters)
     
     #Initializing data lists
-    all_difference_y_list=[]
+    all_difference_y_list=[] #=[file][y values] y's not averaged!
 
     #Creating empty data list for each loop
     for i in range(50):
@@ -74,12 +76,12 @@ def scan(files): #, outfile_name="RootScan.csv"): #args becomes files
                 if x == iReco:
                   NewtotalRecoSpectrum[x]+=(tree.pulseShapeTemplate.at(i) * tree.samplesReco.at(iBx))
           
-	print "NewtotalRecoSpectrum = %s" % ", ".join(map(str, NewtotalRecoSpectrum))
+	#print "NewtotalRecoSpectrum = %s" % ", ".join(map(str, NewtotalRecoSpectrum))
   	
 
 	
         #initializing data sets for DigiDifference data. DIFFERENT FOR EACH FILE!
-	Difference_x = [] #x values same for all
+	Difference_x = [] #x values same for all for each smp/frq
 	all_difference_y_list[fi+1] = []
 
 	#Setting parameters based on nsamp/nfreq
@@ -97,7 +99,7 @@ def scan(files): #, outfile_name="RootScan.csv"): #args becomes files
  	   skip = 8
  	   points = 32
  	
-	print ("tree.nSmple = ", tree.nSmpl) 	
+	#print "tree.nSmple = ", tree.nSmpl 	
 
 	#for each entry extract x,y
 	i=0
@@ -117,30 +119,76 @@ def scan(files): #, outfile_name="RootScan.csv"): #args becomes files
     
     #After calculating Difference_y for each file, now want to average y values and create list of (x,average y)
     
-    Average_difference_y = []
+    #Average_difference_y = [] #For one averaged set
+             #For seven averaged sets
+    Pulse_Shift_List=[]
+    
+    for i in range(7):
+      Pulse_Shift_List.append([])
+
     entries=len(Difference_x)
-   
-    for i in range(entries): #Loop to append values for each x value. 'range()' includes 0 
-      total=0.0
-      for j in range(len(files)):      #Average the y's for given x over files
-        total += all_difference_y_list[j+1][i]
-      average_y=total/(len(files))
-      Average_difference_y.append(average_y) 
+    print "Range(0,7) = ",range(0,7)
+    print "Range(7,14) = ",range(7,14)
+    #sys.exit(0) #exit
+
+    #create average for each pulse_shift set
+    p=7
+    q=0
+    while (p<=49):
+      for i in range(entries): 
+        total=0.0
+        for j in range(0,p):
+          total += all_difference_y_list[j+1][i]
+        average_y=total/(len(files))
+        Pulse_Shift_List[q].append(average_y) 
+      p=p+7
+      q=q+1
 
     print "Difference_x = ", Difference_x
-    print "Average_difference_y = ", Average_difference_y
-    
-    #Plotting nsmpl/nfrq = 10/25
+    print "Pulse_Shift_List[0] = ", Pulse_Shift_List[0]
+    print "Pulse_Shift_List[1] = ", Pulse_Shift_List[1]
+    print "Pulse_Shift_List[2] = ", Pulse_Shift_List[2]
+    print "Pulse_Shift_List[3] = ", Pulse_Shift_List[3]
+    print "Pulse_Shift_List[4] = ", Pulse_Shift_List[4]
+    print "Pulse_Shift_List[5] = ", Pulse_Shift_List[5]
+    print "Pulse_Shift_List[6] = ", Pulse_Shift_List[6] 
+#----------------------------------------------------------------
+    #To get One average
+    #for i in range(entries): #Loop to append values for each x value. 'range()' includes 0 
+      #total=0.0
+      #for j in range(len(files)):      #Average the y's for given x over files
+        #total += all_difference_y_list[j+1][i]
+      #average_y=total/(len(files))
+      #Average_difference_y.append(average_y) 
+
+    #print "Difference_x = ", Difference_x
+    #print "Average_difference_y = ", Average_difference_y
+#----------------------------------------------------------------  
+#Plotting nsmpl/nfrq = 10/25
     plt.figure(1)
     x = Difference_x
-    y = Average_difference_y
-    plt.title("Old Digitization - New Digitization")
+     #y data, for each pulse_shift value  
+    #for i in range(7): #Not sure why this loop isn't working
+      #y_i = Pulse_Shift_List[i]
+    y_0 = Pulse_Shift_List[0]
+    y_1 = Pulse_Shift_List[1]
+    y_2 = Pulse_Shift_List[2]
+    y_3 = Pulse_Shift_List[3]
+    y_4 = Pulse_Shift_List[4]
+    y_5 = Pulse_Shift_List[5]
+    y_6 = Pulse_Shift_List[6]
+    plt.title("Old Digitization - New Digitization Nsmp/Nfrq=10/25")
     plt.xlabel("Time (ns)")
     plt.ylabel("Digitization Difference")
-    plt.plot(x, y, 'b--', linewidth=5) #First plot on graph
-    #plt.plot(y, x, 'r--', linewidth=5) #Second plot on graph 
+    plt.plot(x, y_0, 'b--', linewidth=3)  #First plot on graph
+    plt.plot(x, y_1, 'g--', linewidth=3)  #Second plot on graph
+    plt.plot(x, y_2, 'r--', linewidth=3) 
+    plt.plot(x, y_3, 'c--', linewidth=3) 
+    plt.plot(x, y_4, 'm--', linewidth=3)  #Make a legend 
+    #plt.plot(x, y_5, 'y--', linewidth=3) 
+    #plt.plot(x, y_6, 'k--', linewidth=3)  
     plt.show()
-    plt.savefig("RootScanPlot.png")
+    plt.savefig("RootScanPlot_10_25.png")
 
     #Plotting nsmpl/nfrq = 20/12.5
     #plt.figure(2)
@@ -152,7 +200,7 @@ def scan(files): #, outfile_name="RootScan.csv"): #args becomes files
     #plt.plot(x, y, 'b--', linewidth=5) #First plot on graph
     #plt.plot(y, x, 'r--', linewidth=5) #Second plot on graph 
     #plt.show()
-    #plt.savefig("SecondRootScanPlot.png")
+    #plt.savefig("RootScanPlot_20_125.png") #can I do 12.5? scared of using decimal point in file name
 
     #Plotting nsmpl/nfrq = 40/6.25
     #plt.figure(2)
@@ -164,7 +212,7 @@ def scan(files): #, outfile_name="RootScan.csv"): #args becomes files
     #plt.plot(x, y, 'b--', linewidth=5) #First plot on graph
     #plt.plot(y, x, 'r--', linewidth=5) #Second plot on graph 
     #plt.show()
-    #plt.savefig("ThirdRootScanPlot.png")
+    #plt.savefig("RootScanPlot_40_625.png")
 
     #outputfile.close()
 
