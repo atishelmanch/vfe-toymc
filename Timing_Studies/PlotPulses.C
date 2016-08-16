@@ -128,10 +128,10 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  TCanvas* ccPulseAndReco = new TCanvas ("ccPulseAndReco","4",800,600);
  TGraph *grPulseRecoAll = new TGraph();
  TGraph *grPulseReco[100];  //More than enough space
- std::cout << " samplesReco->size() = " << samplesReco->size() << std::endl;
- std::cout << " activeBXs->size() = " << activeBXs->size() << std::endl;
- std::cout << " pulseShapeTemplate->size() = " << pulseShapeTemplate->size() << std::endl;
- std::cout << " samples->size() = " << samples->size() << std::endl;
+ cout << " samplesReco->size() = " << samplesReco->size() << endl;
+ cout << " activeBXs->size() = " << activeBXs->size() << endl;
+ cout << " pulseShapeTemplate->size() = " << pulseShapeTemplate->size() << endl;
+ cout << " samples->size() = " << samples->size() << endl;
  
  //TLegend* leg = new TLegend(0.7,0.2,0.9,0.9);
  TLegend* leg = new TLegend(0.9,0.2,1.0,0.9); //(x1,y1,x2,y2)
@@ -148,10 +148,10 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
 
  //Defining grPulseReco, totalRecoSpectrum, corresponding to individual BX plots, and total BX plot.
  for(int iBx=0; iBx<samplesReco->size(); iBx++){ //iBx is selected bunch crossing [0,...]->[-4/-8/-16,-3/-6/-12,...]
-  std::cout << " iBx = " << iBx << std::endl;
+  cout << " iBx = " << iBx << endl;
   grPulseReco[iBx] = new TGraph(); //Creating plot for each bunch crossing
   for(int i=0; i<samples->size(); i++){
-   std::cout << "  >> i = " << i << std::endl;
+   cout << "  >> i = " << i << endl;
    grPulseReco[iBx]->SetPoint(i, i * NFREQ + activeBXs->at(iBx)*NFREQ + 2 * 25, pulseShapeTemplate->at(i) * samplesReco->at(iBx));
   
    int iReco = (i * NFREQ + activeBXs->at(iBx)*NFREQ + 2 * 25) / NFREQ;
@@ -214,10 +214,10 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  TCanvas* ccNewPulseAndReco = new TCanvas ("ccNewPulseAndReco","5",800,600);
  TGraph *grNewPulseRecoAll = new TGraph();
  TGraph *grNewPulseReco[100];  // more than enough space
- std::cout << " samplesReco->size() = " << samplesReco->size() << std::endl;
- std::cout << " activeBXs->size() = " << activeBXs->size() << std::endl;
- std::cout << " pulseShapeTemplate->size() = " << pulseShapeTemplate->size() << std::endl;
- std::cout << " samples->size() = " << samples->size() << std::endl;
+ cout << " samplesReco->size() = " << samplesReco->size() << endl;
+ cout << " activeBXs->size() = " << activeBXs->size() << endl;
+ cout << " pulseShapeTemplate->size() = " << pulseShapeTemplate->size() << endl;
+ cout << " samples->size() = " << samples->size() << endl;
  
  //TLegend* leg = new TLegend(0.7,0.2,0.9,0.9);
  TLegend* leg = new TLegend(0.9,0.2,1.0,0.9);
@@ -231,24 +231,27 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  
 //  for(int iBx=0; iBx<3; iBx++)
  for(int iBx=0; iBx<samplesReco->size(); iBx++){ 
-  std::cout << " iBx = " << iBx << std::endl;
+  cout << " iBx = " << iBx << endl;
   if (iBx==4) { //excluding in time bunch cross
   continue;
   }
   grNewPulseReco[iBx] = new TGraph();
   for(int i=0; i<samples->size(); i++){
-   std::cout << "  >> i = " << i << std::endl;
+   cout << "  >> i = " << i << endl;
    grNewPulseReco[iBx]->SetPoint(i, i * NFREQ + activeBXs->at(iBx)*NFREQ + 2 * 25, pulseShapeTemplate->at(i) * samplesReco->at(iBx));
   
    int iReco = (i * NFREQ + activeBXs->at(iBx)*NFREQ + 2 * 25) / NFREQ;
    if ( iReco >= 0 && iReco <samples->size() ) {
+    //cout << "pulseShapeTemplate->at(" << i << ") = " << pulseShapeTemplate->at(i);
+    //cout << "samplesReco->at(" << iBx << ") = " << samplesReco->at(iBx);
     NewtotalRecoSpectrum[iReco] += pulseShapeTemplate->at(i) * samplesReco->at(iBx); //Should pulseShapeTemplate be ->at(i-something)?
    } 
- for (int i=0; i<20; i++){
- std::cout << " NewtotalRecoSpectrum[" << i <<"] = " << NewtotalRecoSpectrum[i] << std::endl;
  }   
- exit(); //exit
-  }
+ 
+ //for (int i=0; i<20; i++){ 
+ //cout << " NewtotalRecoSpectrum[" << i <<"] = " << NewtotalRecoSpectrum[i] << endl;
+ //}
+ 
   grNewPulseReco[iBx]->SetMarkerColor(color[iBx]);
   grNewPulseReco[iBx]->SetLineColor(color[iBx]);
   grNewPulseReco[iBx]->SetMarkerSize(1);
@@ -313,9 +316,9 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  //Plotting in time digitized pulse (from BX canvas)
  TCanvas* ccOldDig = new TCanvas ("ccOldDig","7",800,600);
  TGraph *grOldDig = new TGraph();
- std::cout << "Plotting OldDig" << std::endl;
+ cout << "Plotting OldDig" << endl;
  for(int i=0; i<samples->size(); i++){
-   std::cout << "  >> i = " << i << std::endl;
+   cout << "  >> i = " << i << endl;
    grOldDig->SetPoint(i, i * NFREQ + activeBXs->at(4)*NFREQ+2*25, pulseShapeTemplate->at(i) * samplesReco->at(4));
   }
  grOldDig->SetMarkerColor(color[4]);
@@ -331,12 +334,33 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  grOldDig->SetTitle(graph_title_cst);
  ccOldDig->SaveAs(png_name_cst);
 
+ //First setting up parameters based on nsampl/nfreq combo
+ //Different samp/freq values means different number of Digitization points in common between two methods (points) and different offset (skip)
+ cout << "nsample = " << nsample << endl;
+ if (nsample="10"){
+ int skip = 2;
+ int points = 8;
+ }
+ else if (nsample="20"){
+ int skip = 4;
+ int points = 16;
+ }
+ else if (nsample="40"){
+ int skip = 8;
+ int points = 32;
+ }
+ cout << "Got past if statements." << endl;
+
  //Plotting difference of pulse extraction methods
  TCanvas* ccDigiDifference = new TCanvas ("ccDigiDifference","8",800,600);
  TGraph *grDigiDifference = new TGraph();
- for(int i=0; i<6; i++){
-  grDigiDifference->SetPoint(i, i * NFREQ + 25 * 2, pulseShapeTemplate->at(i) * samplesReco->at(4) - ( samples->at(i+2) - NewtotalRecoSpectrum[i+2]));
+ for(int i=0; i<points; i++){
+  grDigiDifference->SetPoint(i, i * NFREQ + 25 * 2, pulseShapeTemplate->at(i) * samplesReco->at(4) - ( samples->at(i+skip) - NewtotalRecoSpectrum[i+skip]));
 }
+ //^^^^^
+ //Nsmp=10, need i+2, 8 total points in common
+ //Nsmp=20, need i+4, 16 total points in common
+ //Nsmp=40, need i+8, 32 total points in common 
  grDigiDifference->SetMarkerSize(2);
  grDigiDifference->SetMarkerStyle(22);
  grDigiDifference->SetMarkerColor(kBlue);
@@ -353,8 +377,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  TCanvas* ccTruePulse = new TCanvas ("ccTruePulse","9",800,600);
  TGraph *grTruePulse = new TGraph();
  
- std::cout << " pulse_shift = " << pulse_shift << std::endl;
- exit(); //exit
+ cout << " pulse_shift = " << pulse_shift << endl;
 
  for(int i=0; i<samples->size(); i++){
    grTruePulse->SetPoint(i, i * NFREQ , amplitudeTruth * pulseShapeTemplate->at(i-pulse_shift)); //need pulseShapeTemplate at i-pulse_shift..might need to see from results if this is right
