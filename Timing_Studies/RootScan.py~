@@ -1,8 +1,5 @@
-import csv
-import numpy as np
-import matplotlib 
+import numpy as np 
 import sys
-#matplotlib.use('Agg') #Need this to save plot image
 import matplotlib.pyplot as plt
 from ROOT import TFile
 from glob import glob
@@ -10,31 +7,30 @@ from math import sqrt
 from sys import argv
 
 
-def scan(files): #, outfile_name="RootScan.csv"): #args becomes files
-
-    # Output csv file
-    #outputfile = open(outfile_name, 'w')  #open outfile_name in write mode (erases existing content)
-    #outputwriter = csv.writer(outputfile)
-
-    # Logging information headers used for writing to output file
+def scan(files): 
     
-    #for a in range(7): #Want to loop for each pulse_shift value 
+    # Logging information headers 
+    
+     
     param_names = ["nEvents", "pulse_shift", "pileup_shift", "nSmpl", "nFreq",
                    "amplitudeTruth", "nPU", "sigmaNoise", "puFactor",
                    "pulse_tau", "WFNAME"]
-    #DigiDifference_parameters  = ["DigiDifference_x", "DigiDifference_y"]
-    #outputwriter.writerow(param_names + DigiDifference_parameters)
+    
+    #outputwriter.writerow(param_names + )
     
     #Initializing data lists
-    all_difference_y_list=[] #=[file][y values] y's not averaged!
+    all_x_list=[] # = [file number][list of y values] Contains a list of x values for each file
+    all_y_list=[] # = [file number][list of y values] Contains a list of y values for each file
 
-    #Creating empty data list for each loop
+    #Creating empty data list for each loop (file)
     for i in range(50):
-      all_difference_y_list.append([])    
+      all_x_list.append([])
+      all_y_list.append([])  
+        
 
-    # Accessing each file f, index fi+1
     print "\nProcessing %d file(s)\n" % len(files)
-    #sys.exit(0) #exit program
+    
+    # Accessing each file f, index fi+1
     for fi, f in enumerate(files):
 	# Accessing the file.  
         print "File", fi+1, ":", f  #fi+1 because first i is 0. fi+1=file number, f=file path
@@ -44,7 +40,7 @@ def scan(files): #, outfile_name="RootScan.csv"): #args becomes files
 
         # Getting the params from the file
         print "nEvents = ", nEvents
-        tree.GetEntry(0)
+        tree.GetEntry(0) #tree.GetEntry(n) chooses nth event
         params = [nEvents, tree.pulse_shift, tree.pileup_shift,
                   tree.nSmpl, tree.nFreq, tree.amplitudeTruth,
                   tree.nPU, tree.sigmaNoise, tree.puFactor,
@@ -56,8 +52,8 @@ def scan(files): #, outfile_name="RootScan.csv"): #args becomes files
 	Pulse_shift = str(tree.pulse_shift)
         Nsample = str(tree.nSmpl)
 	
-	#Defining NewtotalRecoSpectrum: DIFFERENT FOR EACH FILE!
-	NewtotalRecoSpectrum = [0]*50
+	#Defining OOT RecoSpectrum for each file. Need to change 'NewtotalRecoSpectrum' in PlotPulses.C
+	Out_of_Time_RecoSpectrum = [0]*50
 	
 	for iBx in range(0,len(tree.samplesReco)):
 	  #print "iBx = ", iBx	
@@ -65,53 +61,53 @@ def scan(files): #, outfile_name="RootScan.csv"): #args becomes files
 	    continue #skips in time bunch crossing
 	  for i in range(0,len(tree.samples)): 
 	    #print "i = ", i 
-	    iReco_f=((i * tree.nFreq + tree.activeBXs.at(iBx) * tree.nFreq + 2.0 * 25.0) / (tree.nFreq) )
+	    iReco_f=((i * tree.nFreq + tree.activeBXs.at(iBx) * tree.nFreq + 2.0 * 25.0) / (tree.nFreq) ) #why?
 	    iReco=int(iReco_f)	
 	    #print "iReco = ", iReco
 	    if (iReco>=0 and iReco < len(tree.samples)):
 	      #print "Conditions met."
 	      #print "tree.pulseShapeTemplate.at("+str(i)+") = ",tree.pulseShapeTemplate.at(i)
 	      #print "tree.samplesReco.at("+str(iBx)+") = ",tree.samplesReco.at(iBx)
-	      for x, y in enumerate(NewtotalRecoSpectrum):
+	      for x, y in enumerate(Out_of_Time_RecoSpectrum):
                 if x == iReco:
-                  NewtotalRecoSpectrum[x]+=(tree.pulseShapeTemplate.at(i) * tree.samplesReco.at(iBx))
+                  Out_of_Time_RecoSpectrum[x]+=(tree.pulseShapeTemplate.at(i) * tree.samplesReco.at(iBx))
           
-	#print "NewtotalRecoSpectrum = %s" % ", ".join(map(str, NewtotalRecoSpectrum))
+	#print "Out_of_Time_RecoSpectrum = %s" % ", ".join(map(str, Out_of_Time_RecoSpectrum))
   	
 
 	
-        #initializing data sets for DigiDifference data. DIFFERENT FOR EACH FILE!
-	Difference_x = [] #x values same for all for each smp/frq
-	all_difference_y_list[fi+1] = []
+        #initializing data sets for Pulse Representation Difference data. 
+	all_x_list[fi+1] = [] 
+	all_y_list[fi+1] = []
 
-	#Setting parameters based on nsamp/nfreq
-	#Depending on samp/freq, different number of points on digitization graph
+	#Setting parameters skip, points based on nsamp/nfreq
+	#Depending on samp/freq, different number of points on pulse representation graph
+	#Each all_y_list=[fi+1] will have accurate x data based on file traits nSmpl,nFreq
 
-	if (tree.nSmpl == 10): 
+	if (tree.nSmpl == 10):   #(nSmpl,nFreq) = (10,25)
  	   skip = 2
  	   points = 8
  	
- 	elif (tree.nSmpl == 20):
+ 	elif (tree.nSmpl == 20): #(nSmpl,nFreq) = (20,12.5)
  	   skip = 4
  	   points = 16
  	
- 	elif (tree.nSmpl == 40):
+ 	elif (tree.nSmpl == 40): #(nSmpl,nFreq) = (40,6.25)
  	   skip = 8
- 	   points = 32
- 	
-	#print "tree.nSmple = ", tree.nSmpl 	
+ 	   points = 32 	
 
-	#for each entry extract x,y
+	#Extract x,y based on file parameters
 	i=0
 	tree.GetEntry(0)
-	while (i<points): #I think range will need to be changed for nsamp != 10
-	  Difference_x.append( i * (tree.nFreq) + 25 * 2)
-	  all_difference_y_list[fi+1].append(tree.pulseShapeTemplate.at(i) * tree.samplesReco.at(4) - (tree.samples.at(i+skip) - NewtotalRecoSpectrum[i+skip]))
+	while (i<points): 
+	  all_x_list[fi+1].append( i * (tree.nFreq) + 25 * 2)
+	  all_y_list[fi+1].append(tree.pulseShapeTemplate.at(i) * tree.samplesReco.at(4) - (tree.samples.at(i+skip) - Out_of_Time_RecoSpectrum[i+skip])) #fi+1 = file number. all_y_list[fi+1] contains y values for file fi+1
 	  i = i + 1    
 	
-	print "Difference_x = ", Difference_x
-	print "Difference_y" + str(fi+1) + " = " + str(all_difference_y_list[fi+1])
-	
+	print "x_List for file " + str(fi+1) + ": " + str(all_x_list[fi+1])
+	print "Difference_y " + str(fi+1) + ": " + str(all_y_list[fi+1])
+	print "nSmple for file " + str(fi+1) + ":", tree.nSmpl
+        Last_nSmple = tree.nSmpl
 
         #outputwriter.writerow(params) #Fill row with extracted parameters
 
@@ -126,25 +122,22 @@ def scan(files): #, outfile_name="RootScan.csv"): #args becomes files
     for i in range(7):
       Pulse_Shift_List.append([])
 
-    entries=len(Difference_x)
-    print "Range(0,7) = ",range(0,7)
-    print "Range(7,14) = ",range(7,14)
-    #sys.exit(0) #exit
+    entries=len(all_x_list[1]) #For now, running loop for only one Nsamp/Nfreq, so all files have same x list. Eventually make better.  
 
     #create average for each pulse_shift set
-    p=7
-    q=0
+    p=7 #average every number of files per pulse_shift value
+    q=0 #Begin with Pulse_Shift_List[0]
     while (p<=49):
       for i in range(entries): 
         total=0.0
         for j in range(0,p):
-          total += all_difference_y_list[j+1][i]
+          total += all_y_list[j+1][i]
         average_y=total/(len(files))
         Pulse_Shift_List[q].append(average_y) 
       p=p+7
       q=q+1
 
-    print "Difference_x = ", Difference_x
+    print "all_x_list for file 1 = ", all_x_list[1]
     print "Pulse_Shift_List[0] = ", Pulse_Shift_List[0]
     print "Pulse_Shift_List[1] = ", Pulse_Shift_List[1]
     print "Pulse_Shift_List[2] = ", Pulse_Shift_List[2]
@@ -152,63 +145,173 @@ def scan(files): #, outfile_name="RootScan.csv"): #args becomes files
     print "Pulse_Shift_List[4] = ", Pulse_Shift_List[4]
     print "Pulse_Shift_List[5] = ", Pulse_Shift_List[5]
     print "Pulse_Shift_List[6] = ", Pulse_Shift_List[6] 
+    print "Last_nSmple = ", Last_nSmple
+
 #----------------------------------------------------------------
     #To get One average
     #for i in range(entries): #Loop to append values for each x value. 'range()' includes 0 
       #total=0.0
       #for j in range(len(files)):      #Average the y's for given x over files
-        #total += all_difference_y_list[j+1][i]
+        #total += all_y_list[j+1][i]
       #average_y=total/(len(files))
       #Average_difference_y.append(average_y) 
 
-    #print "Difference_x = ", Difference_x
+    #print "all_x_list[1] = ", all_x_list[1]
     #print "Average_difference_y = ", Average_difference_y
 #----------------------------------------------------------------  
-#Plotting nsmpl/nfrq = 10/25
-    plt.figure(1)
-    x = Difference_x
-     #y data, for each pulse_shift value  
-    #for i in range(7): #Not sure why this loop isn't working
-      #y_i = Pulse_Shift_List[i]
-    y_0 = Pulse_Shift_List[0]
-    y_1 = Pulse_Shift_List[1]
-    y_2 = Pulse_Shift_List[2]
-    y_3 = Pulse_Shift_List[3]
-    y_4 = Pulse_Shift_List[4]
-    y_5 = Pulse_Shift_List[5]
-    y_6 = Pulse_Shift_List[6]
-    plt.title("Old Digitization - New Digitization Nsmp/Nfrq=10/25")
-    plt.xlabel("Time (ns)")
-    plt.ylabel("Digitization Difference")
-    plt.plot(x, y_0, 'b--', linewidth=3)  #First plot on graph
-    plt.plot(x, y_1, 'g--', linewidth=3)  #Second plot on graph
-    plt.plot(x, y_2, 'r--', linewidth=3) 
-    plt.plot(x, y_3, 'c--', linewidth=3) 
-    plt.plot(x, y_4, 'm--', linewidth=3)  #Make a legend 
-    #plt.plot(x, y_5, 'y--', linewidth=3) 
-    #plt.plot(x, y_6, 'k--', linewidth=3)  
-    plt.show()
-    plt.savefig("RootScanPlot_10_25.png")
 
+    #Plotting
+    #Deciding which plots to make based on Last_nSmple
+
+    if (Last_nSmple == 10):   #(nSmpl,nFreq) = (10,25)
+ 	plt.figure(1)
+        x = all_x_list[1]
+        #y data, for each pulse_shift value  
+        #for i in range(7): #Not sure why this loop isn't working
+        #  y_i = Pulse_Shift_List[i]
+        y_0 = Pulse_Shift_List[0]
+        y_1 = Pulse_Shift_List[1]
+        y_2 = Pulse_Shift_List[2]
+        y_3 = Pulse_Shift_List[3]
+        y_4 = Pulse_Shift_List[4]
+        y_5 = Pulse_Shift_List[5]
+        y_6 = Pulse_Shift_List[6]
+
+        plt.title("Pulse Representation Difference Nsmp/Nfrq=10/25", y=1.04) #raises title y position to above axis information
+        plt.xlabel("Time (ns)")
+        plt.ylabel("Method 1 - Method 2") 
+        plt.plot(x, y_4, 'om--', label="0.1", linewidth=3)
+        plt.plot(x, y_3, 'oc--', label="0.05", linewidth=3)
+        plt.plot(x, y_2, 'or--', label="0.02", linewidth=3)
+        plt.plot(x, y_1, 'og--', label="0.01", linewidth=3)
+        plt.plot(x, y_0, 'ob--', label="0", linewidth=3)  
+        #plt.plot(x, y_5, 'y--', label="0.2", linewidth=3) 
+        #plt.plot(x, y_6, 'k--', label="0.5", linewidth=3) 
+        #plt.ylim(-2E-16,7E-16)
+        plt.legend(loc='upper right', title="Pulse_Shift[ns]") 
+        plt.savefig("RootScanPlot_10_25_first_5.png")
+
+        plt.figure(2)
+        x = all_x_list[1]
+        #y data, for each pulse_shift value  
+        #for i in range(7): #Not sure why this loop isn't working
+        #  y_i = Pulse_Shift_List[i]
+        plt.title("Pulse Representation Difference Nsmp/Nfrq=10/25", y=1.04)
+        plt.xlabel("Time (ns)")
+        plt.ylabel("Method 1 - Method 2")
+        plt.plot(x, y_6, 'ok--', label="0.5", linewidth=3) 
+        plt.plot(x, y_5, 'oy--', label="0.2", linewidth=3) 
+        plt.legend(loc='upper left', title="Pulse_Shift[ns]") 
+        #plt.show() #Just need to use this once after all figures made
+        plt.savefig("RootScanPlot_10_25_last_2.png")
+ 	   
+ 	
+    elif (Last_nSmple == 20): #(nSmpl,nFreq) = (20,12.5)
+ 	plt.figure(1)
+        x = all_x_list[1]
+        #y data, for each pulse_shift value  
+        #for i in range(7): #Not sure why this loop isn't working
+        #  y_i = Pulse_Shift_List[i]
+        y_0 = Pulse_Shift_List[0]
+        y_1 = Pulse_Shift_List[1]
+        y_2 = Pulse_Shift_List[2]
+        y_3 = Pulse_Shift_List[3]
+        y_4 = Pulse_Shift_List[4]
+        y_5 = Pulse_Shift_List[5]
+        y_6 = Pulse_Shift_List[6]
+
+        plt.title("Pulse Representation Difference Nsmp/Nfrq=20/12.5", y=1.04) #raises title y position to above axis information
+        plt.xlabel("Time (ns)")
+        plt.ylabel("Method 1 - Method 2") 
+        plt.plot(x, y_0, 'ob--', label="0", linewidth=3)
+        plt.plot(x, y_1, 'og--', label="0.01", linewidth=3) 
+        plt.plot(x, y_2, 'or--', label="0.02", linewidth=3)
+        plt.plot(x, y_3, 'oc--', label="0.05", linewidth=3)
+        plt.plot(x, y_4, 'om--', label="0.1", linewidth=3)
+        #plt.plot(x, y_5, 'y--', label="0.2", linewidth=3) 
+        #plt.plot(x, y_6, 'k--', label="0.5", linewidth=3) 
+        #plt.ylim(-2E-16,7E-16)
+        plt.legend(loc='lower right', title="Pulse_Shift[ns]") 
+        plt.savefig("RootScanPlot_20_125_first_5.png")
+
+        plt.figure(2)
+        x = all_x_list[1]
+        #y data, for each pulse_shift value  
+        #for i in range(7): #Not sure why this loop isn't working
+        #  y_i = Pulse_Shift_List[i]
+        plt.title("Pulse Representation Difference Nsamp=20/12.5", y=1.04)
+        plt.xlabel("Time (ns)")
+        plt.ylabel("Method 1 - Method 2")
+        plt.plot(x, y_6, 'ok--', label="0.5", linewidth=3) 
+        plt.plot(x, y_5, 'oy--', label="0.2", linewidth=3) 
+        plt.legend(loc='upper right', title="Pulse_Shift[ns]") 
+        #plt.show() #Just need to use this once after all figures made
+        plt.savefig("RootScanPlot_20_125_last_2.png")	       
+ 	 
+ 	
+    elif (Last_nSmple == 40): #(nSmpl,nFreq) = (40,6.25)
+ 	plt.figure(1)
+        x = all_x_list[1]
+        #y data, for each pulse_shift value  
+        #for i in range(7): #Not sure why this loop isn't working
+        #  y_i = Pulse_Shift_List[i]
+        y_0 = Pulse_Shift_List[0]
+        y_1 = Pulse_Shift_List[1]
+        y_2 = Pulse_Shift_List[2]
+        y_3 = Pulse_Shift_List[3]
+        y_4 = Pulse_Shift_List[4]
+        y_5 = Pulse_Shift_List[5]
+        y_6 = Pulse_Shift_List[6]
+
+        plt.title("Pulse Representation Difference Nsmp/Nfrq=40/6.25", y=1.04) #raises title y position to above axis information
+        plt.xlabel("Time (ns)")
+        plt.ylabel("Method 1 - Method 2") 
+        plt.plot(x, y_4, 'om--', label="0.1", linewidth=3)
+        plt.plot(x, y_3, 'oc--', label="0.05", linewidth=3)
+        plt.plot(x, y_2, 'or--', label="0.02", linewidth=3)
+        plt.plot(x, y_1, 'og--', label="0.01", linewidth=3)
+        plt.plot(x, y_0, 'ob--', label="0", linewidth=3)  
+        #plt.plot(x, y_5, 'y--', label="0.2", linewidth=3) 
+        #plt.plot(x, y_6, 'k--', label="0.5", linewidth=3) 
+        plt.ylim(-2E-16,7E-16)
+        plt.legend(loc='upper left', title="Pulse_Shift[ns]") 
+        plt.savefig("RootScanPlot_40_625_first_5.png")
+
+        plt.figure(2)
+        x = all_x_list[1]
+        #y data, for each pulse_shift value  
+        #for i in range(7): #Not sure why this loop isn't working
+        #  y_i = Pulse_Shift_List[i]
+        plt.title("Pulse Representation Difference Nsmp/Nfrq=40/6.25", y=1.04)
+        plt.xlabel("Time (ns)")
+        plt.ylabel("Method 1 - Method 2")
+        plt.plot(x, y_6, 'ok--', label="0.5", linewidth=3) 
+        plt.plot(x, y_5, 'oy--', label="0.2", linewidth=3) 
+        plt.legend(loc='upper right', title="Pulse_Shift[ns]") 
+        #plt.show() #Just need to use this once after all figures made
+        plt.savefig("RootScanPlot_40_625_last_2.png")
+
+
+
+	      
     #Plotting nsmpl/nfrq = 20/12.5
-    #plt.figure(2)
-    #x = Difference_x
+    #plt.figure(2) #3?
+    #x = all_x_list[1]
     #y = Average_difference_y
     #plt.title("fdsa")
     #plt.xlabel("Time (ns)")
-    #plt.ylabel("Digitization Difference")
+    #plt.ylabel("Pulse Representation Difference Nsmp/Nfrq=")
     #plt.plot(x, y, 'b--', linewidth=5) #First plot on graph
     #plt.plot(y, x, 'r--', linewidth=5) #Second plot on graph 
-    #plt.show()
     #plt.savefig("RootScanPlot_20_125.png") #can I do 12.5? scared of using decimal point in file name
 
     #Plotting nsmpl/nfrq = 40/6.25
     #plt.figure(2)
-    #x = Difference_x
+    #x = all_x_list[1]
     #y = Average_difference_y
     #plt.title("fdsa")
     #plt.xlabel("Time (ns)")
-    #plt.ylabel("Digitization Difference")
+    #plt.ylabel("Pulse Representation Difference Nsmp/Nfrq=")
     #plt.plot(x, y, 'b--', linewidth=5) #First plot on graph
     #plt.plot(y, x, 'r--', linewidth=5) #Second plot on graph 
     #plt.show()

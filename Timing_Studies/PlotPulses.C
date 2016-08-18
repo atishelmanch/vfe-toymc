@@ -103,7 +103,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  grReco->SetTitle(graph_title_cst);
  ccReco->SaveAs(png_name_cst);
  
- //Plotting digitized waveform
+ //Plotting Digitized Data
  TCanvas* ccPulse = new TCanvas ("ccPulse","3",800,600);
  TGraph *grPulse = new TGraph();
  for(int i=0; i<samples->size(); i++){
@@ -124,7 +124,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  
  cout << " end " << endl;
 
- //Plotting Digitized In and Out of Time BX with separately digitized in time pulse
+ //Plotting Pulse Representations of In and Out of Time BX with separately digitized in time pulse (from Canvas 3)
  TCanvas* ccPulseAndReco = new TCanvas ("ccPulseAndReco","4",800,600);
  TGraph *grPulseRecoAll = new TGraph();
  TGraph *grPulseReco[100];  //More than enough space
@@ -172,7 +172,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  //Draw digitized waveform (in time BX)
  grPulse->Draw("ALP");  
 
- //Draw digitized waveforms (out of time BX's besides iBx=0)
+ //Draw waveform representations (out of time BX's besides iBx=0)
  for(int iBx=1; iBx<samplesReco->size(); iBx++){
   grPulseReco[iBx]->Draw("PL");
  }
@@ -210,7 +210,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
 // data-sum(all bunch crossings except intime)E_{j}*f(i-j)
 // --------------------------------------------------------
 
- //Plotting Digitized Out of Time BX with separately digitized in time
+ //Plotting pulse representations of Out of Time BX with separately digitized in time (from Canvas 3)
  TCanvas* ccNewPulseAndReco = new TCanvas ("ccNewPulseAndReco","5",800,600);
  TGraph *grNewPulseRecoAll = new TGraph();
  TGraph *grNewPulseReco[100];  // more than enough space
@@ -223,7 +223,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  TLegend* leg = new TLegend(0.9,0.2,1.0,0.9);
  TPaveText* box = new TPaveText(0.9,0.9,1.0,1.0, "NDC");
  
- float NewtotalRecoSpectrum[100];
+ float NewtotalRecoSpectrum[100]; //Change NewtotalRecoSpectrum to name of recospectrum in RootScan.py
  for(int i=0; i<samples->size(); i++){
   NewtotalRecoSpectrum[i]=0;
  }
@@ -294,27 +294,9 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  png_name_cst = png_name.c_str();
  ccNewPulseAndReco->SaveAs(png_name_cst);
 
- //Plotting Digitized in time pulse as "data-sum(all BX except in time)E_j*f(i-j)" rather than "E_i*f(intime)" <-Black box graph in plot 4
- TCanvas* ccNewReco = new TCanvas ("ccNewReco","6",800,600);
- TGraph *grNewReco = new TGraph();
- for(int i=0; i<samples->size(); i++){
-  grNewReco->SetPoint(i, i * NFREQ, samples->at(i)-NewtotalRecoSpectrum[i]); //samples->at(i)-grNewPulseRecoAll[i]
- }
- grNewReco->SetMarkerSize(2);
- grNewReco->SetMarkerStyle(22);
- grNewReco->SetMarkerColor(kBlue);
- grNewReco->Draw("ALP");
- grNewReco->GetXaxis()->SetTitle("time [ns]");
- png_name = "images/plotPulse/New_" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_digitized.png";
- png_name_cst = png_name.c_str();
- graph_title = "New Digitized";
- graph_title_cst = graph_title.c_str();
- grNewReco->SetTitle(graph_title_cst);
- ccNewReco->SaveAs(png_name_cst);
 
-
- //Plotting in time digitized pulse (from BX canvas)
- TCanvas* ccOldDig = new TCanvas ("ccOldDig","7",800,600);
+ //Plotting in time pulse representation (from BX canvas)
+ TCanvas* ccOldDig = new TCanvas ("ccOldDig","6",800,600);
  TGraph *grOldDig = new TGraph();
  cout << "Plotting OldDig" << endl;
  for(int i=0; i<samples->size(); i++){
@@ -327,12 +309,30 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  grOldDig->SetMarkerStyle(25);
  grOldDig->Draw("ALP"); // Draw Axis, make Line plot, plot markers at Points	
  grOldDig->GetXaxis()->SetTitle("time [ns]");
- png_name = "images/plotPulse/Old_" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_digitized.png";
+ png_name = "images/plotPulse/MethodOne_" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_PulseRepresentation.png";
  png_name_cst = png_name.c_str();
- graph_title = "Old Digitized " + nameWF + " Waveform: " + nsample + " samples, " + nfreq + "ns period";
+ graph_title = "Method 1 Pulse Representation " + nameWF + ", " + nsample + "/" + nfreq +", " + ps + " pulse shift";//+ nfreq + "ns period";
  graph_title_cst = graph_title.c_str();
  grOldDig->SetTitle(graph_title_cst);
  ccOldDig->SaveAs(png_name_cst);
+
+ //Plotting representation of in time pulse as "data-sum(all BX except in time)E_j*f(i-j)" rather than "E_i*f(intime)" <-Black box graph in plot 4
+ TCanvas* ccNewReco = new TCanvas ("ccNewReco","7",800,600);
+ TGraph *grNewReco = new TGraph();
+ for(int i=0; i<samples->size(); i++){
+  grNewReco->SetPoint(i, i * NFREQ, samples->at(i)-NewtotalRecoSpectrum[i]); //samples->at(i)-grNewPulseRecoAll[i]
+ }
+ grNewReco->SetMarkerSize(2);
+ grNewReco->SetMarkerStyle(22);
+ grNewReco->SetMarkerColor(kBlue);
+ grNewReco->Draw("ALP");
+ grNewReco->GetXaxis()->SetTitle("time [ns]");
+ png_name = "images/plotPulse/MethodTwo_" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_PulseRepresentation.png";
+ png_name_cst = png_name.c_str();
+ graph_title = "Method 2 Pulse Representation " + nameWF + ", " + nsample + "/" + nfreq +", " + ps + " pulse shift";
+ graph_title_cst = graph_title.c_str();
+ grNewReco->SetTitle(graph_title_cst);
+ ccNewReco->SaveAs(png_name_cst);
 
  //First setting up parameters based on nsampl/nfreq combo
  //Different samp/freq values means different number of Digitization points in common between two methods (points) and different offset (skip)
@@ -366,9 +366,9 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  grDigiDifference->SetMarkerColor(kBlue);
  grDigiDifference->Draw("ALP");
  grDigiDifference->GetXaxis()->SetTitle("time [ns]");
- png_name ="images/plotPulse/" + ps + "_DigiDifference.png";
+ png_name ="images/plotPulse/" + ps + "_PulseRepresentationDifference.png";
  png_name_cst = png_name.c_str();
- graph_title = "Old Digitization - New Digitization";
+ graph_title = "Method 1 Pulse Representation - Method 2 Pulse Representation";
  graph_title_cst = graph_title.c_str();
  grDigiDifference->SetTitle(graph_title_cst);
  ccDigiDifference->SaveAs(png_name_cst);
