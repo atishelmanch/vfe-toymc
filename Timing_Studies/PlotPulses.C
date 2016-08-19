@@ -124,7 +124,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  
  cout << " end " << endl;
 
- //Plotting Pulse Representations of In and Out of Time BX with separately digitized in time pulse (from Canvas 3)
+ //Plotting Pulse Representations of In and Out of Time BX with separately digitized data (from Canvas 3)
  TCanvas* ccPulseAndReco = new TCanvas ("ccPulseAndReco","4",800,600);
  TGraph *grPulseRecoAll = new TGraph();
  TGraph *grPulseReco[100];  //More than enough space
@@ -169,7 +169,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
   leg->AddEntry(grPulseReco[iBx],nameHistoTitle.Data(),"p"); // adding BX #'s to legend
  }
  
- //Draw digitized waveform (in time BX)
+ //Draw digitized raw data (in time BX)
  grPulse->Draw("ALP");  
 
  //Draw waveform representations (out of time BX's besides iBx=0)
@@ -210,7 +210,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
 // data-sum(all bunch crossings except intime)E_{j}*f(i-j)
 // --------------------------------------------------------
 
- //Plotting pulse representations of Out of Time BX with separately digitized in time (from Canvas 3)
+ //Plotting pulse representations of Out of Time BX with separately digitized raw data (from Canvas 3)
  TCanvas* ccNewPulseAndReco = new TCanvas ("ccNewPulseAndReco","5",800,600);
  TGraph *grNewPulseRecoAll = new TGraph();
  TGraph *grNewPulseReco[100];  // more than enough space
@@ -296,43 +296,43 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
 
 
  //Plotting in time pulse representation (from BX canvas)
- TCanvas* ccOldDig = new TCanvas ("ccOldDig","6",800,600);
- TGraph *grOldDig = new TGraph();
- cout << "Plotting OldDig" << endl;
+ TCanvas* ccMethod_One_PR = new TCanvas ("ccMethod_One_PR","6",800,600); //PR = Pulse Representation
+ TGraph *grMethod_One_PR = new TGraph();
+ cout << "Plotting Method_One_PR" << endl;
  for(int i=0; i<samples->size(); i++){
    cout << "  >> i = " << i << endl;
-   grOldDig->SetPoint(i, i * NFREQ + activeBXs->at(4)*NFREQ+2*25, pulseShapeTemplate->at(i) * samplesReco->at(4));
+   grMethod_One_PR->SetPoint(i, i * NFREQ + activeBXs->at(4)*NFREQ+2*25, pulseShapeTemplate->at(i) * samplesReco->at(4));
   }
- grOldDig->SetMarkerColor(color[4]);
- grOldDig->SetLineColor(color[4]);
- grOldDig->SetMarkerSize(1);
- grOldDig->SetMarkerStyle(25);
- grOldDig->Draw("ALP"); // Draw Axis, make Line plot, plot markers at Points	
- grOldDig->GetXaxis()->SetTitle("time [ns]");
+ grMethod_One_PR->SetMarkerColor(color[4]);
+ grMethod_One_PR->SetLineColor(color[4]);
+ grMethod_One_PR->SetMarkerSize(1);
+ grMethod_One_PR->SetMarkerStyle(25);
+ grMethod_One_PR->Draw("ALP"); // Draw Axis, make Line plot, plot markers at Points	
+ grMethod_One_PR->GetXaxis()->SetTitle("time [ns]");
  png_name = "images/plotPulse/MethodOne_" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_PulseRepresentation.png";
  png_name_cst = png_name.c_str();
  graph_title = "Method 1 Pulse Representation " + nameWF + ", " + nsample + "/" + nfreq +", " + ps + " pulse shift";//+ nfreq + "ns period";
  graph_title_cst = graph_title.c_str();
- grOldDig->SetTitle(graph_title_cst);
- ccOldDig->SaveAs(png_name_cst);
+ grMethod_One_PR->SetTitle(graph_title_cst);
+ ccMethod_One_PR->SaveAs(png_name_cst);
 
  //Plotting representation of in time pulse as "data-sum(all BX except in time)E_j*f(i-j)" rather than "E_i*f(intime)" <-Black box graph in plot 4
- TCanvas* ccNewReco = new TCanvas ("ccNewReco","7",800,600);
- TGraph *grNewReco = new TGraph();
+ TCanvas* ccMethod_Two_PR = new TCanvas ("ccMethod_Two_PR","7",800,600);
+ TGraph *grMethod_Two_PR = new TGraph();
  for(int i=0; i<samples->size(); i++){
-  grNewReco->SetPoint(i, i * NFREQ, samples->at(i)-NewtotalRecoSpectrum[i]); //samples->at(i)-grNewPulseRecoAll[i]
+  grMethod_Two_PR->SetPoint(i, i * NFREQ, samples->at(i)-NewtotalRecoSpectrum[i]); //samples->at(i)-grNewPulseRecoAll[i]
  }
- grNewReco->SetMarkerSize(2);
- grNewReco->SetMarkerStyle(22);
- grNewReco->SetMarkerColor(kBlue);
- grNewReco->Draw("ALP");
- grNewReco->GetXaxis()->SetTitle("time [ns]");
+ grMethod_Two_PR->SetMarkerSize(2);
+ grMethod_Two_PR->SetMarkerStyle(22);
+ grMethod_Two_PR->SetMarkerColor(kBlue);
+ grMethod_Two_PR->Draw("ALP");
+ grMethod_Two_PR->GetXaxis()->SetTitle("time [ns]");
  png_name = "images/plotPulse/MethodTwo_" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_PulseRepresentation.png";
  png_name_cst = png_name.c_str();
  graph_title = "Method 2 Pulse Representation " + nameWF + ", " + nsample + "/" + nfreq +", " + ps + " pulse shift";
  graph_title_cst = graph_title.c_str();
- grNewReco->SetTitle(graph_title_cst);
- ccNewReco->SaveAs(png_name_cst);
+ grMethod_Two_PR->SetTitle(graph_title_cst);
+ ccMethod_Two_PR->SaveAs(png_name_cst);
 
  //First setting up parameters based on nsampl/nfreq combo
  //Different samp/freq values means different number of Digitization points in common between two methods (points) and different offset (skip)
@@ -352,26 +352,26 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  cout << "Got past if statements." << endl;
 
  //Plotting difference of pulse extraction methods
- TCanvas* ccDigiDifference = new TCanvas ("ccDigiDifference","8",800,600);
- TGraph *grDigiDifference = new TGraph();
+ TCanvas* ccMethodDifference = new TCanvas ("ccMethodDifference","8",800,600);
+ TGraph *grMethodDifference = new TGraph();
  for(int i=0; i<points; i++){
-  grDigiDifference->SetPoint(i, i * NFREQ + 25 * 2, pulseShapeTemplate->at(i) * samplesReco->at(4) - ( samples->at(i+skip) - NewtotalRecoSpectrum[i+skip]));
+  grMethodDifference->SetPoint(i, i * NFREQ + 25 * 2, pulseShapeTemplate->at(i) * samplesReco->at(4) - ( samples->at(i+skip) - NewtotalRecoSpectrum[i+skip]));
 }
  //^^^^^
  //Nsmp=10, need i+2, 8 total points in common
  //Nsmp=20, need i+4, 16 total points in common
  //Nsmp=40, need i+8, 32 total points in common 
- grDigiDifference->SetMarkerSize(2);
- grDigiDifference->SetMarkerStyle(22);
- grDigiDifference->SetMarkerColor(kBlue);
- grDigiDifference->Draw("ALP");
- grDigiDifference->GetXaxis()->SetTitle("time [ns]");
+ grMethodDifference->SetMarkerSize(2);
+ grMethodDifference->SetMarkerStyle(22);
+ grMethodDifference->SetMarkerColor(kBlue);
+ grMethodDifference->Draw("ALP");
+ grMethodDifference->GetXaxis()->SetTitle("time [ns]");
  png_name ="images/plotPulse/" + ps + "_PulseRepresentationDifference.png";
  png_name_cst = png_name.c_str();
  graph_title = "Method 1 Pulse Representation - Method 2 Pulse Representation";
  graph_title_cst = graph_title.c_str();
- grDigiDifference->SetTitle(graph_title_cst);
- ccDigiDifference->SaveAs(png_name_cst);
+ grMethodDifference->SetTitle(graph_title_cst);
+ ccMethodDifference->SaveAs(png_name_cst);
 
 //Plotting 'true' pulse (not sure what to call it..?)
  TCanvas* ccTruePulse = new TCanvas ("ccTruePulse","9",800,600);
