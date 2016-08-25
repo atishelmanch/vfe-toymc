@@ -53,7 +53,7 @@ class PulseChiSqSNNLS {
    
    
    double ChiSq() const { return _chisq; }
-   void disableErrorCalculation() { _computeErrors = false; }
+   void disableErrorCalculation() { _computeErrors = true; } //was false 
    
    void setNSAMPLES( int NSAMPLES ) { _NSAMPLES = NSAMPLES; }
    void setNFREQ   ( float NFREQ )  { _NFREQ = NFREQ; }

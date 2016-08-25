@@ -219,7 +219,7 @@ void run(
   
     bool status = pulsefunc.DoFit( amplitudes, noisecor, pedrms, activeBX, fullpulse, fullpulsecov );
     double chisq = pulsefunc.ChiSq();
-    const PulseVector* errors = pulsefunc.Errors();
+    PulseVector* errors = pulsefunc.Errors();
     std::cout << "  >> chisq =       " << chisq << std::endl;
     std::cout << "  >> _errvec =       " << *errors << std::endl;
     chiSquare = chisq;

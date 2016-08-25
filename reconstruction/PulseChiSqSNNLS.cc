@@ -371,8 +371,9 @@ double PulseChiSqSNNLS::ComputeApproxUncertainty(unsigned int ipulse) {
   //(using 1/second derivative since full Hessian is not meaningful in
   //presence of positive amplitude boundaries.)
       
-//   return 1./_covdecomp->matrixL().solve(_pulsemat->col(ipulse)).norm();
-  return 1./_covdecomp_support->llt().matrixL().solve(_pulsemat->col(ipulse)).norm();
+   return 1./_covdecomp->matrixL().solve(_pulsemat->col(ipulse)).norm();
+
+//return 1./_covdecomp_support->llt().matrixL().solve(_pulsemat->col(ipulse)).norm();
   
 }
 

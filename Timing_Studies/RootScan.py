@@ -122,6 +122,10 @@ def scan(files):
       #all_WFNAME.append([])
       #all_pulse_tau.append([])
 
+    Out_of_Time_amp = []
+    #for i in range(len(files)+1):
+    #  Out_of_Time_amp.append([])
+
     # Let the user know that files are about to be accessed 
     print "\nProcessing %d file(s)\n" % len(files)
     
@@ -286,13 +290,18 @@ def scan(files):
         #print "al true x[1]:", all_True_Pulse_x[1]
         #print "al true y[1]:", all_True_Pulse_y[1]
         #outputwriter.writerow(params) #Fill row with extracted parameters
-
+        Out_of_Time_amp.append(tree.samplesReco.at(9)) #reco range(0,9)
+        
         in_file.Close() #Close file being read
     
     # After calculating Difference_y for each file, now want to average y values and create list of (x,average y)
     
     #Average_difference_y = [] #For one averaged set
              #For seven averaged sets
+    print "Out_of_Time_amp list = ",Out_of_Time_amp
+    #print "Manual Exit."
+    #sys.exit(0)
+
     Pulse_Shift_List=[]
     for i in range(21): # Range(number of pulse_shift values) 
       Pulse_Shift_List.append([])

@@ -141,7 +141,6 @@ bool PulseChiSqSNNLS::DoFit(const SampleVector &samples, const SampleMatrix &sam
   if (!status) return status;
   
   if(!_computeErrors) return status;
-
   //compute MINOS-like uncertainties for in-time amplitude
   bool foundintime = false;
   unsigned int ipulseintime = 0;
@@ -371,8 +370,9 @@ double PulseChiSqSNNLS::ComputeApproxUncertainty(unsigned int ipulse) {
   //(using 1/second derivative since full Hessian is not meaningful in
   //presence of positive amplitude boundaries.)
       
-//   return 1./_covdecomp->matrixL().solve(_pulsemat->col(ipulse)).norm();
-  return 1./_covdecomp_support->llt().matrixL().solve(_pulsemat->col(ipulse)).norm();
+   return 1./_covdecomp->matrixL().solve(_pulsemat->col(ipulse)).norm();
+
+//return 1./_covdecomp_support->llt().matrixL().solve(_pulsemat->col(ipulse)).norm();
   
 }
 
@@ -424,7 +424,7 @@ bool PulseChiSqSNNLS::NNLS() {
 
   int iter = 0;
   while (true) {
-    std::cout << " iter = " << iter << " :: " << maxiter << std::endl << std::endl;
+    //std::cout << " iter = " << iter << " :: " << maxiter << std::endl << std::endl;
     //can only perform this step if solution is guaranteed viable
     if (iter>0 || _nP==0) {
       if ( _nP==npulse ) break;                  
