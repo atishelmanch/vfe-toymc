@@ -8,6 +8,12 @@ def plot(Last_nSmple, all_x_list, all_y_list, Pulse_Shift_List):
         #y data, for each pulse_shift value  
         #for i in range(7): #Not sure why this loop isn't working
         #  y_i = Pulse_Shift_List[i]
+        
+        y = []*50
+
+        for i in range(21):
+          y.append(Pulse_Shift_List[i])
+
         y_0 = Pulse_Shift_List[0]
         y_1 = Pulse_Shift_List[1]
         y_2 = Pulse_Shift_List[2]
@@ -19,11 +25,13 @@ def plot(Last_nSmple, all_x_list, all_y_list, Pulse_Shift_List):
         plt.title("Pulse Representation Difference Nsmp/Nfrq=10/25", y=1.04) #raises title y position to above axis information
         plt.xlabel("Time (ns)")
         plt.ylabel("Method 1 - Method 2") 
-        plt.plot(x, y_4, 'om--', label="0.1", linewidth=3)
-        plt.plot(x, y_3, 'oc--', label="0.05", linewidth=3)
-        plt.plot(x, y_2, 'or--', label="0.02", linewidth=3)
-        plt.plot(x, y_1, 'og--', label="0.01", linewidth=3)
-        plt.plot(x, y_0, 'ob--', label="0", linewidth=3)  
+        for i in range(8):
+            plt.plot(x, y[i], 'oy--', label="highi", linewidth=3)
+        #plt.plot(x, y_4, 'om--', label="0.1", linewidth=3)
+        #plt.plot(x, y_3, 'oc--', label="0.05", linewidth=3)
+        #plt.plot(x, y_2, 'or--', label="0.02", linewidth=3)
+        #plt.plot(x, y_1, 'og--', label="0.01", linewidth=3)
+        #plt.plot(x, y_0, 'ob--', label="0", linewidth=3)  
         #plt.plot(x, y_5, 'y--', label="0.2", linewidth=3) 
         #plt.plot(x, y_6, 'k--', label="0.5", linewidth=3) 
         #plt.ylim(-2E-16,7E-16)

@@ -80,7 +80,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  gr->SetLineColor(kMagenta);
  gr->SetLineWidth(2);
  gr->GetXaxis()->SetTitle("time [ns]");
- string png_name = "images/plotPulse/" + nameWF + "_raw.png";
+ string png_name = "images/PlotPulse/" + nameWF + "_raw.png";
  char * png_name_cst = png_name.c_str();
  ccwaveform->SaveAs(png_name_cst);
  
@@ -96,7 +96,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  grReco->SetMarkerColor(kBlue);
  grReco->Draw("ALP"); //P: Marker plotted at each point
  grReco->GetXaxis()->SetTitle("BX");
- png_name = "images/plotPulse/" + ps + "_" + nsample + "_" + nfreq + "_reconstructed.png";
+ png_name = "images/PlotPulse/" + ps + "_" + nsample + "_" + nfreq + "_reconstructed.png";
  png_name_cst = png_name.c_str();
  graph_title = "Reconstructed " + nameWF + " Pulse: " + nsample + " samples, " + nfreq + "ns period";
  graph_title_cst = graph_title.c_str();
@@ -115,7 +115,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  //Draws samples
  grPulse->Draw("ALP"); // Draw Axis, make Line plot, plot markers at Points	
  grPulse->GetXaxis()->SetTitle("time [ns]");
- png_name = "images/plotPulse/" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_digitized.png";
+ png_name = "images/PlotPulse/" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_digitized.png";
  png_name_cst = png_name.c_str();
  graph_title = "Digitized " + nameWF + " Waveform: " + nsample + " samples, " + nfreq + "ns period";
  graph_title_cst = graph_title.c_str();
@@ -199,7 +199,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  
  leg->Draw();
 
- png_name = "images/plotPulse/" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_PulseRecoAll.png";
+ png_name = "images/PlotPulse/" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_PulseRecoAll.png";
  png_name_cst = png_name.c_str();
  ccPulseAndReco->SaveAs(png_name_cst);
  
@@ -290,7 +290,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  
  leg->Draw();
 
- png_name = "images/plotPulse/" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_PulseRecoAllExceptInTime.png";
+ png_name = "images/PlotPulse/" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_PulseRecoAllExceptInTime.png";
  png_name_cst = png_name.c_str();
  ccNewPulseAndReco->SaveAs(png_name_cst);
 
@@ -309,7 +309,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  grMethod_One_PR->SetMarkerStyle(25);
  grMethod_One_PR->Draw("ALP"); // Draw Axis, make Line plot, plot markers at Points	
  grMethod_One_PR->GetXaxis()->SetTitle("time [ns]");
- png_name = "images/plotPulse/MethodOne_" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_PulseRepresentation.png";
+ png_name = "images/PlotPulse/MethodOne_" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_PulseRepresentation.png";
  png_name_cst = png_name.c_str();
  graph_title = "Method 1 Pulse Representation " + nameWF + ", " + nsample + "/" + nfreq +", " + ps + " pulse shift";//+ nfreq + "ns period";
  graph_title_cst = graph_title.c_str();
@@ -327,7 +327,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  grMethod_Two_PR->SetMarkerColor(kBlue);
  grMethod_Two_PR->Draw("ALP");
  grMethod_Two_PR->GetXaxis()->SetTitle("time [ns]");
- png_name = "images/plotPulse/MethodTwo_" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_PulseRepresentation.png";
+ png_name = "images/PlotPulse/MethodTwo_" + ps + "_"  + nameWF + "_" + nsample + "_" + nfreq + "_PulseRepresentation.png";
  png_name_cst = png_name.c_str();
  graph_title = "Method 2 Pulse Representation " + nameWF + ", " + nsample + "/" + nfreq +", " + ps + " pulse shift";
  graph_title_cst = graph_title.c_str();
@@ -366,7 +366,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  grMethodDifference->SetMarkerColor(kBlue);
  grMethodDifference->Draw("ALP");
  grMethodDifference->GetXaxis()->SetTitle("time [ns]");
- png_name ="images/plotPulse/" + ps + "_PulseRepresentationDifference.png";
+ png_name ="images/PlotPulse/" + ps + "_PulseRepresentationDifference.png";
  png_name_cst = png_name.c_str();
  graph_title = "Method 1 Pulse Representation - Method 2 Pulse Representation";
  graph_title_cst = graph_title.c_str();
@@ -387,7 +387,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  grTruePulse->SetMarkerColor(kBlue);
  grTruePulse->Draw("ALP");
  grTruePulse->GetXaxis()->SetTitle("time [ns]");
- png_name ="images/plotPulse/TruePulse.png";
+ png_name ="images/PlotPulse/TruePulse.png";
  png_name_cst = png_name.c_str();
  graph_title = "TruePulse";
  graph_title_cst = graph_title.c_str();
@@ -404,7 +404,7 @@ void PlotPulses (string nameInputFile = "output.root", string nsample, string nf
  grOldminTrue->SetMarkerColor(kBlue);
  grOldminTrue->Draw("ALP");
  grOldminTrue->GetXaxis()->SetTitle("time [ns]");
- png_name ="images/plotPulse/OldminTrue.png";
+ png_name ="images/PlotPulse/OldminTrue.png";
  png_name_cst = png_name.c_str();
  graph_title = "Old - True";
  graph_title_cst = graph_title.c_str();

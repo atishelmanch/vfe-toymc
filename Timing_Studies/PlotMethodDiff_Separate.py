@@ -1,19 +1,16 @@
+# The purpose of this function is to plot method 1 - method 2 vs. time for each waveform separately
+# This should output a plot with method 1 - method 2 vs. time for single pulse_shift value, single
+# smp/frq value, line for each waveform.
+
 import matplotlib.pyplot as plt
 
-def plot(Last_nSmple, all_x_list, all_y_list, Pulse_Shift_List):
-
-    if (Last_nSmple == 10):   #(nSmpl,nFreq) = (10,25)
+def Plot_Per_Waveform():
+  if (Last_nSmple == 10):   #(nSmpl,nFreq) = (10,25)
  	plt.figure(1)
         x = all_x_list[1] #b/c for first file of homogeneous batch of files, all have same x list
         #y data, for each pulse_shift value  
         #for i in range(7): #Not sure why this loop isn't working
         #  y_i = Pulse_Shift_List[i]
-        
-        y = []*50
-
-        for i in range(21):
-          y.append(Pulse_Shift_List[i])
-
         y_0 = Pulse_Shift_List[0]
         y_1 = Pulse_Shift_List[1]
         y_2 = Pulse_Shift_List[2]
@@ -25,13 +22,11 @@ def plot(Last_nSmple, all_x_list, all_y_list, Pulse_Shift_List):
         plt.title("Pulse Representation Difference Nsmp/Nfrq=10/25", y=1.04) #raises title y position to above axis information
         plt.xlabel("Time (ns)")
         plt.ylabel("Method 1 - Method 2") 
-        for i in range(7):
-            plt.plot(x, y[i], 'oy--', label="highi", linewidth=3)
-        #plt.plot(x, y_4, 'om--', label="0.1", linewidth=3)
-        #plt.plot(x, y_3, 'oc--', label="0.05", linewidth=3)
-        #plt.plot(x, y_2, 'or--', label="0.02", linewidth=3)
-        #plt.plot(x, y_1, 'og--', label="0.01", linewidth=3)
-        #plt.plot(x, y_0, 'ob--', label="0", linewidth=3)  
+        plt.plot(x, y_4, 'om--', label="0.1", linewidth=3)
+        plt.plot(x, y_3, 'oc--', label="0.05", linewidth=3)
+        plt.plot(x, y_2, 'or--', label="0.02", linewidth=3)
+        plt.plot(x, y_1, 'og--', label="0.01", linewidth=3)
+        plt.plot(x, y_0, 'ob--', label="0", linewidth=3)  
         #plt.plot(x, y_5, 'y--', label="0.2", linewidth=3) 
         #plt.plot(x, y_6, 'k--', label="0.5", linewidth=3) 
         #plt.ylim(-2E-16,7E-16)
@@ -58,7 +53,7 @@ def plot(Last_nSmple, all_x_list, all_y_list, Pulse_Shift_List):
         #plt.savefig("RootScanPlot_10_25_last_2.png")
  	   
  	
-    elif (Last_nSmple == 20): #(nSmpl,nFreq) = (20,12.5)
+  elif (Last_nSmple == 20): #(nSmpl,nFreq) = (20,12.5)
  	plt.figure(1)
         x = all_x_list[1]
         #y data, for each pulse_shift value  
@@ -87,7 +82,7 @@ def plot(Last_nSmple, all_x_list, all_y_list, Pulse_Shift_List):
         plt.savefig("RootScanPlot_20_125_last_2.png")	       
  	 
  	
-    elif (Last_nSmple == 40): #(nSmpl,nFreq) = (40,6.25)
+  elif (Last_nSmple == 40): #(nSmpl,nFreq) = (40,6.25)
  	plt.figure(1)
         x = all_x_list[1]
         #y data, for each pulse_shift value  
