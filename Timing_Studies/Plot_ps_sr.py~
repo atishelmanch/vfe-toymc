@@ -3,7 +3,7 @@ import sys
 import matplotlib.pyplot as plt
 
 #The purpose of this function definition is to plot (x,y)=(Pulse_Shift,SamplesReco(4)) lines graphs for each CRRC
-def Plot(Last_nSmple, files, CRRC10_ps_sr, CRRC20_ps_sr, CRRC30_ps_sr, CRRC43_ps_sr, CRRC60_ps_sr, CRRC90_ps_sr, all_pulse_shift, all_samplesReco):
+def Plot(Last_nSmple, Last_trueamp, files, CRRC10_ps_sr, CRRC20_ps_sr, CRRC30_ps_sr, CRRC43_ps_sr, CRRC60_ps_sr, CRRC90_ps_sr):
 
     #Only works because of order of file input, 6 waveforms
     #Adding x values
@@ -31,8 +31,8 @@ def Plot(Last_nSmple, files, CRRC10_ps_sr, CRRC20_ps_sr, CRRC30_ps_sr, CRRC43_ps
   #Plotting
   #Choosing nSmple to plot. Eventually want to plot all three at once
 
-    CRRC10_ps_sr.sort()
-    CRRC10 = filter(None, CRRC10_ps_sr) #Remove empty elements
+    CRRC10_ps_sr.sort()                 # Sort by x values
+    CRRC10 = filter(None, CRRC10_ps_sr) # Remove empty elements
     CRRC20_ps_sr.sort()
     CRRC20 = filter(None, CRRC20_ps_sr)
     CRRC30_ps_sr.sort()
@@ -44,10 +44,12 @@ def Plot(Last_nSmple, files, CRRC10_ps_sr, CRRC20_ps_sr, CRRC30_ps_sr, CRRC43_ps
     CRRC90_ps_sr.sort()
     CRRC90 = filter(None, CRRC90_ps_sr)
 
+    print "CRRC10 = ",CRRC10
+    print "CRRC20 = ",CRRC20
+    print "CRRC30 = ",CRRC30
     print "CRRC43 = ",CRRC43
-    print "Manual Exit."
-    sys.exit(0)
-
+    print "CRRC60 = ",CRRC60
+    print "CRRC90 = ",CRRC90
 
     x_10 = [x[0] for x in CRRC10]
     y_10 = [y[1] for y in CRRC10]
@@ -61,13 +63,13 @@ def Plot(Last_nSmple, files, CRRC10_ps_sr, CRRC20_ps_sr, CRRC30_ps_sr, CRRC43_ps
     y_60 = [y[1] for y in CRRC60]
     x_90 = [x[0] for x in CRRC90]
     y_90 = [y[1] for y in CRRC90]
-    print "x = ",x_10
-    print "y = ",y_10
+    print "CRRC10 x = ",x_10
+    print "CRRC10 y = ",y_10
 
     if (Last_nSmple == 10):
       #Plotting
       plt.figure(1)
-      plt.title("Reconstructed in time Amp vs. Pulse_Shift, smpl/freq = 10/25", y=1.04)
+      plt.title("Reconstructed Amp vs. Pulse Shift, smpl/freq = 10/25, True Amp = "+str(Last_trueamp)+"GeV", y=1.04)
       plt.xlabel("Pulse Shift [ns]")
       plt.ylabel("Reconstructed In Time Amplitude [GeV]")
       plt.errorbar(x_10, y_10, xerr=0, yerr=0.04)
@@ -83,7 +85,7 @@ def Plot(Last_nSmple, files, CRRC10_ps_sr, CRRC20_ps_sr, CRRC30_ps_sr, CRRC43_ps
       plt.plot(x_60, y_60, 'om-', label="CRRC60")
       plt.plot(x_90, y_90, 'ok-', label="CRRC90")
       plt.legend(loc='best', title="Waveform", prop={'size':12})
-      plt.savefig("CRRC_10_25_ps_sr_neg")
+      plt.savefig("CRRC_10_25_ps_sr_"+str(Last_trueamp)+".png")
       plt.show()
       #plt.xlim(-0.001,0.001)
       #plt.ylim(9.9,10.1)
@@ -91,7 +93,7 @@ def Plot(Last_nSmple, files, CRRC10_ps_sr, CRRC20_ps_sr, CRRC30_ps_sr, CRRC43_ps
     elif (Last_nSmple == 20):
       #Plotting
       plt.figure(1)
-      plt.title("Reconstructed in time Amp vs. Pulse_Shift, smpl/freq = 20/12.5", y=1.04)
+      plt.title("Reconstructed Amp vs. Pulse Shift, smpl/freq = 20/12.5, True Amp = "+str(Last_trueamp)+"GeV", y=1.04)
       plt.xlabel("Pulse Shift [ns]")
       plt.ylabel("Reconstructed In Time Amplitude[GeV]")
       #plt.ylim(9.995,10.039)
@@ -107,15 +109,15 @@ def Plot(Last_nSmple, files, CRRC10_ps_sr, CRRC20_ps_sr, CRRC30_ps_sr, CRRC43_ps
       plt.plot(x_43, y_43, 'oc-', label="CRRC43")
       plt.plot(x_60, y_60, 'om-', label="CRRC60")
       plt.plot(x_90, y_90, 'ok-', label="CRRC90")
-      plt.legend(loc='upper center', title="Waveform", prop={'size':10})
-      plt.savefig("CRRC_20_125_ps_sr_neg")
+      plt.legend(loc='best', title="Waveform", prop={'size':12})
+      plt.savefig("CRRC_20_125_ps_sr_"+str(Last_trueamp)+".png")
       plt.show()
       #plt.xlim(-0.001,0.001)
 
     elif (Last_nSmple == 40):
       #Plotting
       plt.figure(1)
-      plt.title("Reconstructed in time Amp vs. Pulse_Shift, smpl/freq = 40/6.25", y=1.04)
+      plt.title("Reconstructed Amp vs. Pulse_Shift, smpl/freq = 40/6.25, True Amp = "+str(Last_trueamp)+"GeV", y=1.04)
       plt.xlabel("Pulse Shift [ns]")
       plt.ylabel("Reconstructed In Time Amplitude[GeV]")
       plt.ticklabel_format(useOffset=False) #Y axis absolute values without offset (like +9.99)
@@ -132,7 +134,7 @@ def Plot(Last_nSmple, files, CRRC10_ps_sr, CRRC20_ps_sr, CRRC30_ps_sr, CRRC43_ps
       plt.plot(x_43, y_43, 'oc-', label="CRRC43")
       plt.plot(x_60, y_60, 'om-', label="CRRC60")
       plt.plot(x_90, y_90, 'ok-', label="CRRC90")
-      plt.legend(loc='upper left', title="Waveform", prop={'size':11})
-      plt.savefig("CRRC_40_625_ps_sr_neg")
+      plt.legend(loc='upper left', title="Waveform", prop={'size':12})
+      plt.savefig("CRRC_40_625_ps_sr_"+str(Last_trueamp)+".png")
       plt.show()
       #plt.xlim(-0.001,0.001) 

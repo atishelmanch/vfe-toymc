@@ -8,8 +8,10 @@
 
 # Import other python files by treating like modules
 import PlotMethodDiff 
-import Plot_ps_sr 
-import Plot_True_Pulse    
+import Plot_ps_sr
+import Plot_ps_diff 
+import Plot_True_Pulse 
+import Plot_oot   
 
 # Import necessary modules
 import sys  # To use sys.exit(0)
@@ -30,8 +32,6 @@ def scan(files):
     # Creating data lists
     all_x_list = [] # = [file number][list of x values] Contains a list of x values for each file
     all_y_list = [] # = [file number][list of y values] Contains a list of y values for each file
-    all_pulse_shift = []  
-    all_samplesReco = [] # = [Single samplesReco value,]
     all_Met1_x = []
     all_Met1_y = [] # Method 1 y values for each file number
     all_Met2_x = []
@@ -42,6 +42,30 @@ def scan(files):
     all_Met2_min_TrueP = [] # = [file number][list of y values]
     #all_WFNAME = []
     #all_pulse_tau = []
+    
+    # Creating Met 1 List for each waveform
+    #CRRC10_met1 = [] #(x,y) = (met1_x, met1_y)
+    #CRRC20_met1 = []
+    #CRRC30_met1 = []
+    #CRRC43_met1 = []
+    #CRRC60_met1 = []
+    #CRRC90_met1 = []
+
+    # Creating Met 2 List for each waveform
+    #CRRC10_met2 = [] #(x,y) = (met2_x, met2_y)
+    #CRRC20_met2 = []
+    #CRRC30_met2 = []
+    #CRRC43_met2 = []
+    #CRRC60_met2 = []
+    #CRRC90_met2 = []
+
+    # Creating True List for each waveform
+    #CRRC10_True = [] #(x,y) = (met_x, met2_y)
+    #CRRC20_True = []
+    #CRRC30_True = []
+    #CRRC43_True = []
+    #CRRC60_True = []
+    #CRRC90_True = []
 
     # Creating List for each waveform
     CRRC10_ps_sr = [] #(ps,sr) = (Pulse_Shift, SamplesReco)
@@ -50,32 +74,23 @@ def scan(files):
     CRRC43_ps_sr = []
     CRRC60_ps_sr = []
     CRRC90_ps_sr = []
-    
-    # Creating Met 1 List for each waveform
-    CRRC10_met1 = [] #(x,y) = (met1_x, met1_y)
-    CRRC20_met1 = []
-    CRRC30_met1 = []
-    CRRC43_met1 = []
-    CRRC60_met1 = []
-    CRRC90_met1 = []
 
-    # Creating Met 2 List for each waveform
-    CRRC10_met2 = [] #(x,y) = (met2_x, met2_y)
-    CRRC20_met2 = []
-    CRRC30_met2 = []
-    CRRC43_met2 = []
-    CRRC60_met2 = []
-    CRRC90_met2 = []
+    # (x,y) = (pulse shift, samplesReco-amplitudetruth)
+    CRRC10_ps_diff = []
+    CRRC20_ps_diff = []
+    CRRC30_ps_diff = []
+    CRRC43_ps_diff = []
+    CRRC60_ps_diff = []
+    CRRC90_ps_diff = []
 
-    # Creating True List for each waveform
-    CRRC10_True = [] #(x,y) = (met_x, met2_y)
-    CRRC20_True = []
-    CRRC30_True = []
-    CRRC43_True = []
-    CRRC60_True = []
-    CRRC90_True = []
+    Out_of_Time_amp_10 = []
+    Out_of_Time_amp_20 = []
+    Out_of_Time_amp_30 = []
+    Out_of_Time_amp_43 = []
+    Out_of_Time_amp_60 = []
+    Out_of_Time_amp_90 = []
 
-    # Creating (x,y) lists in each waveform list
+    # Creating (x,y) in each waveform list, for each file
     i=0
     while (i<len(files)+1):
       CRRC10_ps_sr.append([])
@@ -84,6 +99,20 @@ def scan(files):
       CRRC43_ps_sr.append([])
       CRRC60_ps_sr.append([])
       CRRC90_ps_sr.append([])
+      # (x,y) = (pulse shift, samplesReco-amplitudetruth)
+      CRRC10_ps_diff.append([])
+      CRRC20_ps_diff.append([])
+      CRRC30_ps_diff.append([])
+      CRRC43_ps_diff.append([])
+      CRRC60_ps_diff.append([])
+      CRRC90_ps_diff.append([])
+      
+      Out_of_Time_amp_10.append([])
+      Out_of_Time_amp_20.append([])
+      Out_of_Time_amp_30.append([])
+      Out_of_Time_amp_43.append([])
+      Out_of_Time_amp_60.append([])
+      Out_of_Time_amp_90.append([])
       #CRRC10_met1.append([]) #Might have to do one noise per set of files
       #CRRC20_met1.append([])
       #CRRC30_met1.append([])
@@ -108,21 +137,19 @@ def scan(files):
     for i in range(len(files)+1): #Right now have empty slot in each of these lists for file 0 b/c fi+1 is file index, starts at 1.
       all_x_list.append([]) # = [file number][list of y values] Contains a list of x values for each file
       all_y_list.append([])  
-      all_samplesReco.append([])
-      all_pulse_shift.append([])
-      all_Met1_x.append([]) # Method 1 x values for each file number
-      all_Met1_y.append([]) # Method 1 y values for each file number
-      all_Met2_x.append([]) # Method 2 x values for each file number 
-      all_Met2_y.append([]) # Method 2 y values for each file number
-      all_True_Pulse_x.append([])
-      all_True_Pulse_y.append([])
-      all_Met1_min_TrueP.append([]) # = [file number][list of y values]
-      all_Met2_min_TrueP.append([]) # = [file number][list of y values] 
+      #all_Met1_x.append([]) # Method 1 x values for each file number
+      #all_Met1_y.append([]) # Method 1 y values for each file number
+      #all_Met2_x.append([]) # Method 2 x values for each file number 
+      #all_Met2_y.append([]) # Method 2 y values for each file number
+      #all_True_Pulse_x.append([])
+      #all_True_Pulse_y.append([])
+      #all_Met1_min_TrueP.append([]) # = [file number][list of y values]
+      #all_Met2_min_TrueP.append([]) # = [file number][list of y values] 
 
       #all_WFNAME.append([])
       #all_pulse_tau.append([])
 
-    Out_of_Time_amp = []
+    #Out_of_Time_amp = []
     #for i in range(len(files)+1):
     #  Out_of_Time_amp.append([])
 
@@ -148,35 +175,8 @@ def scan(files):
         for name, value in zip(param_names, params): #name,value=x,y
           print '{0:>17}: {1:>5}'.format(name, value)
 
-          #Might be more efficient than out of file append method (right before plotting)
-	  #Adding current file's (pulse shape, sample reco) point to correct CRRC list
-
-	#Pulse_shift = str(tree.pulse_shift)
-        #Nsample = str(tree.nSmpl)
-
-        #if (tree.pulse_tau == 10):
-        #  CRRC10_ps_sr[0].append(tree.pulse_shift)
-        #  CRRC10_ps_sr[1].append(tree.samplesReco.at(4))
-
-        #elif (tree.pulse_tau == 20):
-        #  CRRC20_ps_sr[0].append(tree.pulse_shift)
-        #  CRRC20_ps_sr[1].append(tree.samplesReco.at(4))
-
-        #elif (tree.pulse_tau == 30):
-        #  CRRC30_ps_sr[0].append(tree.pulse_shift)
-        #  CRRC30_ps_sr[1].append(tree.samplesReco.at(4))
-
-        #elif (tree.pulse_tau == 43):
-        #  CRRC43_ps_sr[0].append(tree.pulse_shift)
-        #  CRRC43_ps_sr[1].append(tree.samplesReco.at(4))
-
-        #elif (tree.pulse_tau == 60):
-        #  CRRC60_ps_sr[0].append(tree.pulse_shift)
-        #  CRRC60_ps_sr[1].append(tree.samplesReco.at(4))
-
-        #elif (tree.pulse_tau == 90):
-        #  CRRC90_ps_sr[0].append(tree.pulse_shift)
-        #  CRRC90_ps_sr[1].append(tree.samplesReco.at(4))
+        # Extracting pulse shift and in-time samples Reco for each file.
+        # Before plotting, empty elements are removed.
 
         if (tree.pulse_tau == 10):
           CRRC10_ps_sr[fi+1].append(tree.pulse_shift)
@@ -202,19 +202,44 @@ def scan(files):
           CRRC90_ps_sr[fi+1].append(tree.pulse_shift)
           CRRC90_ps_sr[fi+1].append(tree.samplesReco.at(4))
 
+        # Below is for y = diff = samplesreco-amplitudetruth
 
-        #print "CRRC i 0 ps sr = ",CRRC10_ps_sr
-        #print "CRRC i 0 ps sr = ",CRRC30_ps_sr
-        #print "CRRC i 0 ps sr = ",CRRC43_ps_sr
-        #print "CRRC i 0 ps sr = ",CRRC60_ps_sr
-        #print "system exit"
-        #sys.exit(0)
+        if (tree.pulse_tau == 10):
+          CRRC10_ps_diff[fi+1].append(tree.pulse_shift)
+          CRRC10_ps_diff[fi+1].append(tree.samplesReco.at(4)-tree.amplitudeTruth)
+          Out_of_Time_amp_10[fi+1].append(tree.pulse_shift) 
+          Out_of_Time_amp_10[fi+1].append(tree.samplesReco.at(3))  #reco range(0,9)
 
-        all_pulse_shift[fi+1].append(tree.pulse_shift)
-        all_samplesReco[fi+1].append(tree.samplesReco.at(4))
-        #all_WFNAME[fi+1].append(str(tree.WFNAME))
-        #all_pulse_tau[fi+1].append(tree.pulse_tau)
-	
+        elif (tree.pulse_tau == 20):
+          CRRC20_ps_diff[fi+1].append(tree.pulse_shift)
+          CRRC20_ps_diff[fi+1].append(tree.samplesReco.at(4)-tree.amplitudeTruth)
+          Out_of_Time_amp_20[fi+1].append(tree.pulse_shift) 
+          Out_of_Time_amp_20[fi+1].append(tree.samplesReco.at(3))
+
+        elif (tree.pulse_tau == 30):
+          CRRC30_ps_diff[fi+1].append(tree.pulse_shift)
+          CRRC30_ps_diff[fi+1].append(tree.samplesReco.at(4)-tree.amplitudeTruth)
+          Out_of_Time_amp_30[fi+1].append(tree.pulse_shift) 
+          Out_of_Time_amp_30[fi+1].append(tree.samplesReco.at(3))
+
+        elif (tree.pulse_tau == 43):
+          CRRC43_ps_diff[fi+1].append(tree.pulse_shift)
+          CRRC43_ps_diff[fi+1].append(tree.samplesReco.at(4)-tree.amplitudeTruth)
+          Out_of_Time_amp_43[fi+1].append(tree.pulse_shift) 
+          Out_of_Time_amp_43[fi+1].append(tree.samplesReco.at(3))
+
+        elif (tree.pulse_tau == 60):
+          CRRC60_ps_diff[fi+1].append(tree.pulse_shift)
+          CRRC60_ps_diff[fi+1].append(tree.samplesReco.at(4)-tree.amplitudeTruth)
+          Out_of_Time_amp_60[fi+1].append(tree.pulse_shift) 
+          Out_of_Time_amp_60[fi+1].append(tree.samplesReco.at(3))
+
+        elif (tree.pulse_tau == 90):
+          CRRC90_ps_diff[fi+1].append(tree.pulse_shift)
+          CRRC90_ps_diff[fi+1].append(tree.samplesReco.at(4)-tree.amplitudeTruth)
+          Out_of_Time_amp_90[fi+1].append(tree.pulse_shift) 
+          Out_of_Time_amp_90[fi+1].append(tree.samplesReco.at(3))
+
 	#Defining OOT RecoSpectrum for each file. Need to change 'NewtotalRecoSpectrum' in PlotPulses.C
 	Out_of_Time_RecoSpectrum = [0]*50
 	
@@ -271,18 +296,19 @@ def scan(files):
 	print "Difference_y " + str(fi+1) + ": " + str(all_y_list[fi+1])
 	print "nSmple for file " + str(fi+1) + ":", tree.nSmpl
         Last_nSmple = tree.nSmpl
+        Last_trueamp = tree.amplitudeTruth
 
         # Extracting the Met1, Met2 data
-        i = 0
-        while (i<points):
-          all_Met1_x[fi+1].append(i * (tree.nFreq) + tree.activeBXs.at(4) * (tree.nFreq) + 2 * 25) 
-          all_Met1_y[fi+1].append(tree.pulseShapeTemplate.at(i) * tree.samplesReco.at(4)) 
-          all_Met2_x[fi+1].append(i * (tree.nFreq)) 
-          all_Met2_y[fi+1].append(tree.samples.at(i) - Out_of_Time_RecoSpectrum[i]) 
-          all_True_Pulse_x[fi+1].append(i * tree.nFreq)
+        #i = 0
+        #while (i<points):
+          #all_Met1_x[fi+1].append(i * (tree.nFreq) + tree.activeBXs.at(4) * (tree.nFreq) + 2 * 25) 
+          #all_Met1_y[fi+1].append(tree.pulseShapeTemplate.at(i) * tree.samplesReco.at(4)) 
+          #all_Met2_x[fi+1].append(i * (tree.nFreq)) 
+          #all_Met2_y[fi+1].append(tree.samples.at(i) - Out_of_Time_RecoSpectrum[i]) 
+          #all_True_Pulse_x[fi+1].append(i * tree.nFreq)
           #print "i - tree.pulse_Shift = ", i - tree.pulse_shift
-          all_True_Pulse_y[fi+1].append(tree.amplitudeTruth * tree.pulseShapeTemplate.at(i-int(tree.pulse_shift)))
-          i += 1
+          #all_True_Pulse_y[fi+1].append(tree.amplitudeTruth * tree.pulseShapeTemplate.at(i-int(tree.pulse_shift)))
+          #i += 1
         #print "al met1x[1]:", all_Met1_x[1]
         #print "al met1y[1]:", all_Met1_y[1]
         #print "al met2x[1]:", all_Met2_x[1]
@@ -290,23 +316,19 @@ def scan(files):
         #print "al true x[1]:", all_True_Pulse_x[1]
         #print "al true y[1]:", all_True_Pulse_y[1]
         #outputwriter.writerow(params) #Fill row with extracted parameters
-        Out_of_Time_amp.append(tree.samplesReco.at(9)) #reco range(0,9)
-        
+
         in_file.Close() #Close file being read
     
     # After calculating Difference_y for each file, now want to average y values and create list of (x,average y)
     
     #Average_difference_y = [] #For one averaged set
              #For seven averaged sets
-    print "Out_of_Time_amp list = ",Out_of_Time_amp
-    print "Manual Exit."
-    sys.exit(0)
 
-    Pulse_Shift_List=[]
-    for i in range(21): # Range(number of pulse_shift values) 
-      Pulse_Shift_List.append([])
+    #Pulse_Shift_List=[]
+    #for i in range(21): # Range(number of pulse_shift values) 
+    #  Pulse_Shift_List.append([])
 
-    entries=len(all_x_list[1]) #For now, running loop for only one Nsamp/Nfreq, so all files have same x list. Eventually make better.  
+    #entries=len(all_x_list[1]) #For now, running loop for only one Nsamp/Nfreq, so all files have same x list. Eventually make better.  
 
     # Create average for each pulse_shift set
     #p=6 #average every 'p' files per pulse_shift value. p = number of waveforms
@@ -333,20 +355,27 @@ def scan(files):
 
     #for fi in range(0,6):
     #    print "Y list for file " + str(fi+1) + ": ", all_y_list[fi+1]
-    #print "samplesreco list = ",all_samplesReco 
-    #print "pulse shift list = ",all_pulse_shift
-    #print "WFNAME list = ",all_WFNAME 
-    #print "Pulse tau list = ",all_pulse_tau
-    #print "Pulse shift list = ",all_pulse_shift
+    
+    # Ask user what they want to plot
+    print "Which would you like to Plot? (select one)"
+    print "SamplesReco (sr)"
+    print "SamplesReco - AmplitudeTruth (diff)"
+    print "Out of Time (oot)"
+    name = raw_input()
 
     # Call plotting functions from other files
-    Plot_ps_sr.Plot(Last_nSmple, files, CRRC10_ps_sr, CRRC20_ps_sr, CRRC30_ps_sr, CRRC43_ps_sr, CRRC60_ps_sr, CRRC90_ps_sr, all_pulse_shift, all_samplesReco)
+    if (name == "sr"):
+      Plot_ps_sr.Plot(Last_nSmple, Last_trueamp, files, CRRC10_ps_sr, CRRC20_ps_sr, CRRC30_ps_sr, CRRC43_ps_sr, CRRC60_ps_sr, CRRC90_ps_sr)
+    elif (name == "diff"):
+      Plot_ps_diff.Plot(Last_nSmple, Last_trueamp, files, CRRC10_ps_diff, CRRC20_ps_diff, CRRC30_ps_diff, CRRC43_ps_diff, CRRC60_ps_diff, CRRC90_ps_diff)
+    elif (name == "oot"):
+      Plot_oot.Plot(Last_nSmple, Last_trueamp, Out_of_Time_amp_10, Out_of_Time_amp_20, Out_of_Time_amp_30, Out_of_Time_amp_43, Out_of_Time_amp_60, Out_of_Time_amp_90)
+
     #PlotMethodDiff.plot(Last_nSmple, all_x_list, all_y_list, Pulse_Shift_List)
     #Plot_True_Pulse.Plot(files, Last_nSmple, all_True_Pulse_x, all_True_Pulse_y, all_Met1_x, all_Met1_y, all_Met2_x, all_Met2_y)
-
 if __name__ == "__main__":
     
-    args = [] # List of input aguments
-    for arg in argv[1:]:  # For arguments argv[1] and following
+    args = []             # List of input aguments
+    for arg in argv[1:]:  # For arguments argv[1] and following,
         args += glob(arg) # Search for and add all * files to args
     scan(args)            # Runs 'scan' function with files=args 
